@@ -23,7 +23,7 @@ app = Flask(__name__)
 
 EMAIL_USER      = os.getenv("EMAIL_USER")
 EMAIL_PASSWORD  = os.getenv("EMAIL_PASSWORD")
-EMAIL_FROM      = os.getenv("EMAIL_FROM", "interviews@next-jennconsulting.com")
+EMAIL_FROM      = os.getenv("EMAIL_FROM", "interview@next-jennconsulting.com")
 EMAIL_FROM_NAME = "Next-Jenn AI Recruiter"
 APP_URL         = os.getenv("APP_URL", "https://nextjenn.onrender.com")
 
