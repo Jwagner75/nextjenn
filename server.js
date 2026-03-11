@@ -43,7 +43,7 @@ const QUESTION_LABELS = {
 // ── TRANSCRIPT EMAIL ROUTE
 app.post('/api/send-transcript', async (req, res) => {
   try {
-    const { candidate_name, candidate_email, job_title, company_name, client_email, interview_date_str, transcripts } = req.body;
+    const { candidate_name, candidate_email, job_title, company_name, hiring_manager_name, client_email, interview_date_str, transcripts } = req.body;
 
     // Build Q&A HTML
     let qaHtml = '';
@@ -159,7 +159,7 @@ app.post('/api/create-interview', async (req, res) => {
     </a>
   </p>
   <p style="margin:8px 0 24px;font-size:12px;color:#8892A4;text-align:center;">Click the button above to begin</p>
-  <p style="margin:0;font-size:13px;color:#8892A4;line-height:1.7;font-style:italic;">Good luck! — Jenn and the Next-Jenn Team</p>
+  <p style="margin:0;font-size:13px;color:#8892A4;line-height:1.7;font-style:italic;">Good luck! — ${hiring_manager_name ? hiring_manager_name + ' and the ' : ''}Next-Jenn Team</p>
 </td></tr>
 <tr><td style="background:#F8F9FC;padding:16px 32px;border-top:1px solid #D8DCE6;">
   <p style="margin:0;font-size:11px;color:#8892A4;text-align:center;">Next-Jenn AI Recruiter Platform | next-jennconsulting.com</p>
