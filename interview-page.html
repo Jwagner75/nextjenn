@@ -1136,26 +1136,33 @@ async function submitResponse() {
   showState('uploading');
   hidePiP();
 
+  // Capture segment ID NOW before currentIndex changes
+  const thisSegId  = SEGMENTS[currentIndex].id;
+  const thisSegIdx = currentIndex;
+
   const blob = await stopRecording();
   let videoUrl = null;
 
   if (blob) {
     try {
-      videoUrl = await uploadWithProgress(blob);
+      videoUrl = await uploadWithProgress(blob, thisSegId);
     } catch (e) { console.error('Upload failed:', e); }
   }
 
-  // Advance directly without waiting for API
+  // Store video URL using captured segment ID
+  if (videoUrl) responseVideos[thisSegId] = videoUrl;
+
+  // Advance
   showState('saved');
   await delay(1400);
-  const next = currentIndex + 1;
+  const next = thisSegIdx + 1;
   if (next < SEGMENTS.length) loadSegment(next); else completeInterview();
-  
+
   // Fire and forget API call in background
   fetch(`${API_BASE}/${SESSION_ID}/submit-response`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ segment_index: currentIndex, segment_id: SEGMENTS[currentIndex].id, video_url: videoUrl }),
+    body: JSON.stringify({ segment_index: thisSegIdx, segment_id: thisSegId, video_url: videoUrl }),
   }).catch(() => {});
 }
 
@@ -1181,7 +1188,7 @@ async function skipResponse() {
 // ─────────────────────────────────────────────────────────────
 // UPLOAD WITH PROGRESS
 // ─────────────────────────────────────────────────────────────
-function uploadWithProgress(blob) {
+function uploadWithProgress(blob, segId) {
   return new Promise((resolve, reject) => {
     const fd = new FormData();
     fd.append('video', blob, `${SESSION_ID}_seg${currentIndex}_${Date.now()}.webm`);
@@ -1199,9 +1206,6 @@ function uploadWithProgress(blob) {
     xhr.onload = () => {
       if (xhr.status === 200) {
         const result = JSON.parse(xhr.responseText);
-        // Store video URL keyed by segment id
-        const seg = SEGMENTS[currentIndex];
-        if (seg) responseVideos[seg.id] = result.video_url;
         resolve(result.video_url);
       } else reject(new Error('Upload failed'));
     };
@@ -1219,7 +1223,13 @@ async function completeInterview() {
   document.getElementById('interview-main').style.display = 'none';
   document.getElementById('completion').classList.add('active');
 
+  // Wait briefly to ensure all uploads have stored their URLs
+  await delay(2000);
+
   // Send transcript email to hiring manager
+  const clientEmail = CLIENT_EMAIL !== '{{CLIENT_EMAIL}}' ? CLIENT_EMAIL : 'interview@next-jennconsulting.com';
+  console.log('Sending transcript to:', clientEmail, 'Videos:', JSON.stringify(responseVideos));
+
   try {
     const transcripts = Object.entries(responseVideos).map(([seg_id, video_url]) => ({
       segment_id: seg_id,
@@ -1227,22 +1237,23 @@ async function completeInterview() {
       video_url: video_url,
     }));
 
-    await fetch('/api/send-transcript', {
+    const resp = await fetch('/api/send-transcript', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        candidate_name:    CAND_NAME !== '{{CAND_NAME}}' ? CAND_NAME : 'Candidate',
-        candidate_email:   '',
-        job_title:         JOB_TITLE !== '{{JOB_TITLE}}' ? JOB_TITLE : 'Open Role',
-        company_name:         COMPANY_NAME,
-        hiring_manager_name:  HIRING_MANAGER_NAME,
-        client_email:      CLIENT_EMAIL !== '{{CLIENT_EMAIL}}' ? CLIENT_EMAIL : 'interview@next-jennconsulting.com',
-        interview_date_str: new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
-        transcripts:       transcripts,
+        candidate_name:      CAND_NAME !== '{{CAND_NAME}}' ? CAND_NAME : 'Candidate',
+        candidate_email:     '',
+        job_title:           JOB_TITLE !== '{{JOB_TITLE}}' ? JOB_TITLE : 'Open Role',
+        company_name:        COMPANY_NAME,
+        hiring_manager_name: HIRING_MANAGER_NAME,
+        client_email:        clientEmail,
+        interview_date_str:  new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        transcripts:         transcripts,
       }),
     });
-    console.log('Transcript email sent');
-  } catch (e) { console.error('Transcript email failed:', e); }
+    const result = await resp.json();
+    console.log('Transcript email result:', JSON.stringify(result));
+  } catch (e) { console.error('Transcript email failed:', e.message); }
 }
 
 // ─────────────────────────────────────────────────────────────
