@@ -21,36 +21,6 @@ app.use(express.static(ROOT));
 try {
   const uploadHandler = require('./upload-handler');
 
-  // Wrap upload route to track videos per session
-  app.post('/api/upload/response-video', (req, res, next) => {
-    // Proxy to upload handler but intercept response to track video URLs
-    const origJson = res.json.bind(res);
-    res.json = function(data) {
-      if (data && data.video_url && req.body) {
-        const sid    = req.body.session_id;
-        const segId  = req.body.segment_id;
-        if (sid && segId) {
-          if (!sessionVideos[sid]) sessionVideos[sid] = { videos: {}, meta: {} };
-          sessionVideos[sid].videos[segId] = data.video_url;
-          sessionVideos[sid].meta = {
-            cand_name:           req.body.cand_name           || '',
-            job_title:           req.body.job_title           || '',
-            company_name:        req.body.company_name        || '',
-            client_email:        req.body.client_email        || '',
-            hiring_manager_name: req.body.hiring_manager_name || '',
-          };
-          const count = Object.keys(sessionVideos[sid].videos).length;
-          console.log('Session ' + sid + ': ' + count + '/5 segments');
-          if (count >= 5) {
-            fireTranscriptEmail(sid).catch(e => console.error('Transcript email error:', e.message));
-          }
-        }
-      }
-      return origJson(data);
-    };
-    next();
-  });
-
   app.use('/api/upload', uploadHandler);
   console.log('upload-handler loaded OK');
 } catch(e) { console.error('upload-handler FAILED:', e.message); }

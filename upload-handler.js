@@ -48,6 +48,21 @@ router.post('/response-video', upload.single('video'), async (req, res) => {
     const videoUrl = R2_PUBLIC_URL + '/' + r2Key;
     console.log('Video uploaded: ' + r2Key + ' (' + (file.size/1024/1024).toFixed(1) + 'MB)');
 
+    // Notify server to track this upload and trigger transcript when all done
+    try {
+      const serverModule = require('./server-tracker');
+      serverModule.trackUpload({
+        session_id:          session_id,
+        segment_id:          req.body.segment_id          || '',
+        video_url:           videoUrl,
+        cand_name:           req.body.cand_name           || '',
+        job_title:           req.body.job_title           || '',
+        company_name:        req.body.company_name        || '',
+        client_email:        req.body.client_email        || '',
+        hiring_manager_name: req.body.hiring_manager_name || '',
+      });
+    } catch(e) { console.error('Tracker error:', e.message); }
+
     res.json({ success: true, video_url: videoUrl, r2_key: r2Key });
 
   } catch (err) {
