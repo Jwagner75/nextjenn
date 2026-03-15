@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Send Interview — Next-Jenn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #1B2A4A;
+    --silver: #8892A4;
+    --light:  #F0F2F5;
+    --white:  #FFFFFF;
+    --dark:   #2D3142;
+    --accent: #4A6FA5;
+    --success:#2E7D5E;
+    --border: #D8DCE6;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--light);
+    min-height: 100vh;
+    color: var(--dark);
+  }
+
+  /* NAV */
+  nav {
+    background: var(--navy);
+    padding: 18px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-logo {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+
+  .nav-tag {
+    font-size: 11px;
+    color: var(--silver);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  /* MAIN */
+  .page {
+    max-width: 600px;
+    margin: 48px auto;
+    padding: 0 20px;
+  }
+
+  .page-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+
+  .page-sub {
+    font-size: 15px;
+    color: var(--silver);
+    margin-bottom: 32px;
+    line-height: 1.6;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 36px;
+    box-shadow: 0 4px 24px rgba(27,42,74,0.08);
+    border: 1px solid var(--border);
+  }
+
+  .card-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--silver);
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* FORM */
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--navy);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 8px;
+  }
+
+  input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--dark);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+
+  input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(74,111,165,0.12);
+  }
+
+  input::placeholder { color: #B0B7C3; }
+
+  .field-hint {
+    font-size: 12px;
+    color: var(--silver);
+    margin-top: 6px;
+  }
+
+  /* BUTTON */
+  .btn-send {
+    width: 100%;
+    padding: 16px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.2s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .btn-send:hover { background: #243760; }
+  .btn-send:active { transform: scale(0.99); }
+  .btn-send:disabled { background: var(--silver); cursor: not-allowed; }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* SUCCESS STATE */
+  .success-card {
+    background: var(--white);
+    border-radius: 16px;
+    padding: 40px 36px;
+    box-shadow: 0 4px 24px rgba(27,42,74,0.08);
+    border: 1px solid var(--border);
+    text-align: center;
+    display: none;
+  }
+
+  .success-icon {
+    width: 64px; height: 64px;
+    background: #EAF4EE;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+    font-size: 28px;
+  }
+
+  .success-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 8px;
+  }
+
+  .success-sub {
+    font-size: 14px;
+    color: var(--silver);
+    line-height: 1.7;
+    margin-bottom: 28px;
+  }
+
+  .link-box {
+    background: var(--light);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    text-align: left;
+  }
+
+  .link-box-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--silver);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .link-box-url {
+    font-size: 13px;
+    color: var(--accent);
+    word-break: break-all;
+    font-family: monospace;
+  }
+
+  .btn-copy {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    background: var(--navy);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    transition: background 0.2s;
+  }
+
+  .btn-copy:hover { background: #243760; }
+  .btn-copy.copied { background: var(--success); }
+
+  .btn-send-another {
+    padding: 12px 28px;
+    background: transparent;
+    color: var(--navy);
+    border: 1.5px solid var(--navy);
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .btn-send-another:hover {
+    background: var(--navy);
+    color: white;
+  }
+
+  /* INFO BOXES */
+  .info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .info-box {
+    background: var(--light);
+    border-radius: 10px;
+    padding: 14px 16px;
+    border: 1px solid var(--border);
+  }
+
+  .info-box-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--silver);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .info-box-value {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  .section-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 8px 0 0;
+  }
+
+  /* ERROR */
+  .error-msg {
+    background: #FFF0F0;
+    border: 1px solid #FFB3B3;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #C0392B;
+    margin-top: 16px;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="nav-logo">NEXT-JENN</span>
+  <span class="nav-tag">AI Recruiter Interview</span>
+</nav>
+
+<div class="page">
+
+  <h1 class="page-title">Send an Interview</h1>
+  <p class="page-sub">Fill in the details below and we'll send the candidate a personalized interview link.</p>
+
+  <!-- FORM CARD -->
+  <div class="card" id="form-card">
+
+    <div class="card-title">Client Information</div>
+
+    <div class="field">
+      <label for="company-name">Company Name</label>
+      <input type="text" id="company-name" placeholder="e.g. Acme Corporation" />
+    </div>
+
+    <div class="field">
+      <label for="hiring-manager-name">Hiring Manager Name</label>
+      <input type="text" id="hiring-manager-name" placeholder="e.g. Jennifer Wagner" />
+    </div>
+
+    <div class="field">
+      <label for="client-email">Hiring Manager Email</label>
+      <input type="email" id="client-email" placeholder="e.g. you@yourcompany.com" />
+      <p class="field-hint">Transcript will be sent here after the interview completes.</p>
+    </div>
+
+    <div class="field">
+      <label for="job-title">Job Title</label>
+      <input type="text" id="job-title" placeholder="e.g. Marketing Manager" />
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="card-title" style="margin-top:24px;">Candidate Information</div>
+
+    <div class="field">
+      <label for="cand-name">Candidate Name</label>
+      <input type="text" id="cand-name" placeholder="e.g. Sarah Johnson" />
+    </div>
+
+    <div class="field">
+      <label for="cand-email">Candidate Email</label>
+      <input type="email" id="cand-email" placeholder="e.g. sarah@email.com" />
+      <p class="field-hint">The interview link will be sent to this address.</p>
+    </div>
+
+    <button class="btn-send" id="send-btn" onclick="sendInterview()">
+      <span id="btn-text">Send Interview Link</span>
+      <div class="spinner" id="spinner"></div>
+    </button>
+
+    <div class="error-msg" id="error-msg"></div>
+  </div>
+
+  <!-- SUCCESS CARD -->
+  <div class="success-card" id="success-card">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Interview Sent!</div>
+    <p class="success-sub">
+      The candidate has been emailed their interview link.<br>
+      You'll receive the transcript at <strong id="confirm-client-email"></strong> once they complete it.
+    </p>
+
+    <div class="info-row">
+      <div class="info-box">
+        <div class="info-box-label">Candidate</div>
+        <div class="info-box-value" id="confirm-name"></div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-label">Role</div>
+        <div class="info-box-value" id="confirm-role"></div>
+      </div>
+    </div>
+
+    <div class="link-box">
+      <div style="flex:1">
+        <div class="link-box-label">Interview Link</div>
+        <div class="link-box-url" id="interview-link-display"></div>
+      </div>
+      <button class="btn-copy" id="copy-btn" onclick="copyLink()">Copy</button>
+    </div>
+
+    <button class="btn-send-another" onclick="sendAnother()">Send Another Interview</button>
+  </div>
+
+</div>
+
+<script>
+let generatedLink = '';
+
+async function sendInterview() {
+  const companyName = document.getElementById('company-name').value.trim();
+  const jobTitle   = document.getElementById('job-title').value.trim();
+  const candName   = document.getElementById('cand-name').value.trim();
+  const candEmail  = document.getElementById('cand-email').value.trim();
+  const clientEmail = document.getElementById('client-email').value.trim();
+
+  // Validate
+  if (!companyName || !jobTitle || !candName || !candEmail || !clientEmail) {
+    showError('Please fill in all fields.');
+    return;
+  }
+  if (!isValidEmail(candEmail) || !isValidEmail(clientEmail)) {
+    showError('Please enter valid email addresses.');
+    return;
+  }
+
+  setLoading(true);
+  hideError();
+
+  try {
+    const res = await fetch('/api/create-interview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_name: companyName,
+        job_title:    jobTitle,
+        cand_name:    candName,
+        cand_email:   candEmail,
+        client_email: clientEmail,
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) throw new Error(data.error || 'Failed to create interview');
+
+    generatedLink = data.interview_url;
+
+    // Show success
+    document.getElementById('confirm-name').textContent        = candName;
+    document.getElementById('confirm-role').textContent        = jobTitle;
+    document.getElementById('confirm-client-email').textContent = clientEmail;
+    document.getElementById('interview-link-display').textContent = generatedLink;
+
+    document.getElementById('form-card').style.display    = 'none';
+    document.getElementById('success-card').style.display = 'block';
+
+  } catch (err) {
+    showError('Something went wrong: ' + err.message);
+  } finally {
+    setLoading(false);
+  }
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(generatedLink).then(() => {
+    const btn = document.getElementById('copy-btn');
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.classList.remove('copied');
+    }, 2000);
+  });
+}
+
+function sendAnother() {
+  document.getElementById('company-name').value        = '';
+  document.getElementById('hiring-manager-name').value = '';
+  document.getElementById('job-title').value    = '';
+  document.getElementById('cand-name').value    = '';
+  document.getElementById('cand-email').value   = '';
+  document.getElementById('client-email').value = '';
+  document.getElementById('form-card').style.display    = 'block';
+  document.getElementById('success-card').style.display = 'none';
+}
+
+function setLoading(on) {
+  const btn     = document.getElementById('send-btn');
+  const text    = document.getElementById('btn-text');
+  const spinner = document.getElementById('spinner');
+  btn.disabled        = on;
+  text.textContent    = on ? 'Sending...' : 'Send Interview Link';
+  spinner.style.display = on ? 'block' : 'none';
+}
+
+function showError(msg) {
+  const el = document.getElementById('error-msg');
+  el.textContent    = msg;
+  el.style.display  = 'block';
+}
+
+function hideError() {
+  document.getElementById('error-msg').style.display = 'none';
+}
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+</script>
+</body>
+</html>
