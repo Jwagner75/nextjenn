@@ -1,0 +1,1298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Next-Jenn — Interview with Jenn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Daily.co prebuilt UI SDK -->
+<script crossorigin src="https://unpkg.com/@daily-co/daily-js"></script>
+<style>
+  :root {
+    --navy: #1B2A4A;
+    --navy-light: #243660;
+    --silver: #8892A4;
+    --silver-light: #B0B8C8;
+    --silver-pale: #E8ECF2;
+    --grey-dark: #2D3142;
+    --grey-mid: #555B6E;
+    --grey-light: #F0F2F5;
+    --grey-border: #D8DCE6;
+    --white: #FFFFFF;
+    --off-white: #F8F9FC;
+    --accent: #4A6FA5;
+    --success: #2E7D5E;
+    --success-pale: #EAF0EE;
+    --warning: #C96A3A;
+    --text: #1A1D2E;
+    --text-mid: #555B6E;
+    --text-light: #8892A4;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--grey-light);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--navy);
+    padding: 0 32px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: 0 2px 16px rgba(27,42,74,0.3);
+  }
+
+  .logo-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-img {
+    height: 36px;
+    width: 36px;
+    object-fit: contain;
+    filter: brightness(0) invert(1);
+  }
+
+  .logo-text {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.08em;
+  }
+
+  .logo-text span { color: var(--silver-light); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .live-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(201,106,58,0.15);
+    border: 1px solid rgba(201,106,58,0.4);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 700;
+    color: #E8855A;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+
+  .live-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #E8855A;
+    animation: livepulse 1.2s infinite;
+  }
+
+  @keyframes livepulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .header-time {
+    font-size: 12px;
+    color: var(--silver);
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 340px;
+    gap: 0;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 32px 24px;
+    gap: 24px;
+  }
+
+  /* ── LEFT — VIDEO ── */
+  .video-area { display: flex; flex-direction: column; gap: 20px; }
+
+  /* Progress track */
+  .progress-track {
+    background: var(--white);
+    border: 1px solid var(--grey-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .track-inner {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+
+  .track-step {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex: 1;
+  }
+
+  .track-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--grey-border);
+    background: var(--off-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-light);
+    flex-shrink: 0;
+    transition: all 0.4s ease;
+    font-family: 'Rajdhani', sans-serif;
+  }
+
+  .track-dot.active {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: var(--white);
+    box-shadow: 0 0 0 4px rgba(27,42,74,0.12);
+  }
+
+  .track-dot.done {
+    border-color: var(--success);
+    background: var(--success);
+    color: var(--white);
+  }
+
+  .track-line {
+    flex: 1;
+    height: 2px;
+    background: var(--grey-border);
+    transition: background 0.4s ease;
+    margin: 0 -1px;
+  }
+
+  .track-line.done { background: var(--success); }
+
+  .track-label {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-left: 16px;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+
+  .track-label strong { color: var(--navy); }
+
+  /* Jenn video */
+  .jenn-wrap {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--navy);
+    aspect-ratio: 16/9;
+    box-shadow: 0 16px 48px rgba(27,42,74,0.2);
+  }
+
+  #jenn-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .jenn-name-tag {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    background: rgba(27,42,74,0.8);
+    backdrop-filter: blur(8px);
+    border-radius: 8px;
+    padding: 6px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .name-tag-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: #4ade80;
+    animation: livepulse 1.5s infinite;
+  }
+
+  .name-tag-text {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--white);
+    letter-spacing: 0.04em;
+  }
+
+  /* Candidate PiP */
+  .pip-wrap {
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+    width: 150px;
+    height: 84px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,0.25);
+    background: #0a0a0a;
+    display: none;
+  }
+
+  .pip-wrap.active { display: block; }
+
+  #pip-video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scaleX(-1);
+  }
+
+  .pip-rec {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: rgba(201,106,58,0.9);
+    border-radius: 4px;
+    padding: 2px 7px;
+    font-size: 9px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: 0.1em;
+    display: none;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .pip-rec.active { display: flex; }
+  .pip-rec-dot { width: 5px; height: 5px; border-radius: 50%; background: white; animation: livepulse 1s infinite; }
+
+  /* Video overlay */
+  .video-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(27,42,74,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+  }
+
+  .video-overlay.show { opacity: 1; }
+
+  .overlay-pill {
+    background: white;
+    border-radius: 30px;
+    padding: 12px 28px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.05em;
+  }
+
+  /* Question display */
+  .question-display {
+    background: var(--white);
+    border: 1px solid var(--grey-border);
+    border-left: 4px solid var(--navy);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: none;
+    animation: slideIn 0.4s ease both;
+  }
+
+  .question-display.show { display: flex; align-items: flex-start; gap: 14px; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .q-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding-top: 1px;
+  }
+
+  .q-text {
+    font-size: 14px;
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  /* ── RIGHT — RESPONSE PANEL ── */
+  .response-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    position: sticky;
+    top: 80px;
+    align-self: start;
+  }
+
+  .panel {
+    background: var(--white);
+    border: 1px solid var(--grey-border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+
+  .panel-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    letter-spacing: 0.04em;
+    margin-bottom: 6px;
+  }
+
+  .panel-sub {
+    font-size: 13px;
+    color: var(--text-mid);
+    font-weight: 300;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  /* State panels */
+  .state { display: none; }
+  .state.active { display: block; }
+
+  /* Waiting state */
+  .wave-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 64px;
+    gap: 5px;
+    margin: 12px 0;
+  }
+
+  .wave-bar {
+    width: 4px;
+    border-radius: 4px;
+    background: var(--navy);
+    animation: wave 1.2s ease-in-out infinite;
+    opacity: 0.3;
+  }
+
+  .wave-bar:nth-child(1) { height: 12px; animation-delay: 0s; }
+  .wave-bar:nth-child(2) { height: 22px; animation-delay: 0.1s; }
+  .wave-bar:nth-child(3) { height: 36px; animation-delay: 0.2s; }
+  .wave-bar:nth-child(4) { height: 22px; animation-delay: 0.3s; }
+  .wave-bar:nth-child(5) { height: 12px; animation-delay: 0.4s; }
+
+  @keyframes wave {
+    0%, 100% { transform: scaleY(0.5); opacity: 0.2; }
+    50%       { transform: scaleY(1); opacity: 0.7; }
+  }
+
+  /* Ready confirmation buttons */
+  .ready-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .btn-yes {
+    padding: 14px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-yes:hover {
+    background: var(--navy-light);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(27,42,74,0.25);
+  }
+
+  .btn-no {
+    padding: 14px;
+    background: var(--off-white);
+    color: var(--text-mid);
+    border: 1px solid var(--grey-border);
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-no:hover { border-color: var(--silver); color: var(--navy); }
+
+  /* Timer ring */
+  .timer-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 8px 0 16px;
+  }
+
+  .timer-ring { position: relative; width: 96px; height: 96px; }
+  .timer-ring svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: var(--grey-light); stroke-width: 7; }
+  .ring-fill { fill: none; stroke: var(--navy); stroke-width: 7; stroke-linecap: round; stroke-dasharray: 276; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear, stroke 0.3s; }
+  .ring-fill.urgent { stroke: var(--warning); }
+  .timer-num { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: 'Rajdhani', sans-serif; font-size: 28px; font-weight: 700; color: var(--text); }
+  .timer-lbl { font-size: 11px; color: var(--text-light); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+
+  /* Rec status */
+  .rec-status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    background: rgba(201,106,58,0.06);
+    border-radius: 8px;
+    border: 1px solid rgba(201,106,58,0.2);
+    margin-bottom: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .rec-status.active { opacity: 1; }
+  .rec-status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warning); animation: livepulse 1s infinite; }
+  .rec-status-text { font-size: 12px; font-weight: 600; color: var(--warning); letter-spacing: 0.04em; }
+
+  /* Action buttons */
+  .btn-done {
+    width: 100%;
+    padding: 14px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+  }
+
+  .btn-done:hover { background: var(--navy-light); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(27,42,74,0.25); }
+  .btn-done:disabled { background: var(--grey-border); cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-skip {
+    width: 100%;
+    padding: 10px;
+    background: transparent;
+    color: var(--text-light);
+    border: 1px solid var(--grey-border);
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-skip:hover { border-color: var(--silver); color: var(--text); }
+
+  /* Upload state */
+  .upload-spin {
+    width: 36px; height: 36px; border: 3px solid var(--grey-light);
+    border-top-color: var(--navy); border-radius: 50%;
+    animation: spin 0.8s linear infinite; margin: 12px auto;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .upload-bar-wrap { background: var(--grey-light); border-radius: 6px; height: 5px; overflow: hidden; margin: 8px 0 4px; }
+  .upload-bar { height: 100%; background: var(--navy); border-radius: 6px; width: 0%; transition: width 0.3s; }
+  .upload-lbl { font-size: 11px; color: var(--text-light); text-align: center; }
+
+  /* Done state */
+  .done-icon { width: 48px; height: 48px; border-radius: 50%; background: var(--success-pale); border: 2px solid var(--success); display: flex; align-items: center; justify-content: center; margin: 4px auto 12px; font-size: 20px; }
+
+  /* Info box */
+  .info-box {
+    background: var(--off-white);
+    border-radius: 10px;
+    padding: 14px;
+    border: 1px solid var(--grey-border);
+  }
+
+  .info-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+
+  .info-label { font-size: 11px; color: var(--text-light); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
+  .info-value { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+
+  /* Permission alert */
+  .perm-alert {
+    background: rgba(201,106,58,0.06);
+    border: 1px solid rgba(201,106,58,0.3);
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 12px;
+    color: var(--warning);
+    line-height: 1.6;
+    margin-bottom: 14px;
+    display: none;
+  }
+
+  .perm-alert.show { display: block; }
+
+  /* ── COMPLETION ── */
+  .completion {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 80px 24px;
+    max-width: 520px;
+    margin: 0 auto;
+    animation: slideIn 0.8s ease both;
+  }
+
+  .completion.active { display: flex; }
+
+  .completion-mark {
+    width: 88px; height: 88px; border-radius: 50%;
+    background: var(--navy); display: flex; align-items: center;
+    justify-content: center; font-size: 36px; margin-bottom: 28px;
+    box-shadow: 0 12px 40px rgba(27,42,74,0.25);
+  }
+
+  .completion-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 36px; font-weight: 700; color: var(--navy);
+    letter-spacing: 0.03em; margin-bottom: 14px;
+  }
+
+  .completion-sub {
+    font-size: 15px; color: var(--text-mid); line-height: 1.8;
+    font-weight: 300; max-width: 400px; margin: 0 auto;
+  }
+
+  .completion-line {
+    width: 40px; height: 2px; background: var(--accent);
+    margin: 24px auto; border-radius: 2px;
+  }
+
+  .completion-note { font-size: 12px; color: var(--text-light); font-style: italic; }
+
+  @media (max-width: 880px) {
+    .main { grid-template-columns: 1fr; padding: 20px 16px; gap: 16px; }
+    .response-panel { position: static; }
+    .pip-wrap { width: 100px; height: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="logo-wrap">
+    <img src="/assets/next-jenn-logo.png" alt="Next-Jenn" class="logo-img">
+    <div class="logo-text">NEXT<span>-JENN</span></div>
+  </div>
+  <div class="header-right">
+    <div class="live-badge"><div class="live-dot"></div>Live Interview</div>
+    <div class="header-time" id="header-clock"></div>
+  </div>
+</header>
+
+<!-- INTERVIEW MAIN -->
+<div class="main" id="interview-main">
+
+  <!-- LEFT -->
+  <div class="video-area">
+
+    <!-- Progress track -->
+    <div class="progress-track">
+      <div class="track-inner" id="track-inner"></div>
+      <div class="track-label">Question <strong id="track-q-label">—</strong></div>
+    </div>
+
+    <!-- Jenn video -->
+    <div class="jenn-wrap">
+      <video id="jenn-video" playsinline></video>
+
+      <!-- Candidate PiP -->
+      <div class="pip-wrap" id="pip-wrap">
+        <video id="pip-video" autoplay muted playsinline></video>
+        <div class="pip-rec" id="pip-rec">
+          <div class="pip-rec-dot"></div>REC
+        </div>
+      </div>
+
+      <div class="jenn-name-tag">
+        <div class="name-tag-dot"></div>
+        <div class="name-tag-text">Jenn — AI Recruiter</div>
+      </div>
+
+      <div class="video-overlay" id="video-overlay">
+        <div class="overlay-pill" id="overlay-text">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Question display -->
+    <div class="question-display" id="question-display">
+      <div class="q-label" id="q-label-text">Question</div>
+      <div class="q-text" id="q-body-text"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div class="response-panel">
+
+    <!-- WAITING -->
+    <div class="panel state active" id="state-waiting">
+      <div class="panel-title">Jenn is Speaking</div>
+      <div class="panel-sub">Listen carefully. Your response window opens automatically.</div>
+      <div class="wave-wrap">
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+        <div class="wave-bar"></div>
+      </div>
+    </div>
+
+    <!-- READY CONFIRMATION -->
+    <div class="panel state" id="state-ready">
+      <div class="panel-title">Ready to Begin?</div>
+      <div class="panel-sub">Confirm you're ready and we'll start your interview right away.</div>
+      <div class="ready-btns">
+        <button class="btn-yes" onclick="confirmReady(true)">Yes, I'm Ready</button>
+        <button class="btn-no" onclick="confirmReady(false)">Not Yet</button>
+      </div>
+    </div>
+
+    <!-- RESPOND -->
+    <div class="panel state" id="state-respond">
+      <div class="panel-title" id="respond-title">Your Response</div>
+      <div class="panel-sub">Speak clearly. Take your time up to the limit shown.</div>
+
+      <div class="perm-alert" id="perm-alert">
+        ⚠ Please allow camera and microphone access to record your response.
+      </div>
+
+      <div class="timer-wrap">
+        <div class="timer-ring">
+          <svg width="96" height="96" viewBox="0 0 96 96">
+            <circle class="ring-bg" cx="48" cy="48" r="44"/>
+            <circle class="ring-fill" id="ring-fill" cx="48" cy="48" r="44"/>
+          </svg>
+          <div class="timer-num" id="timer-num">2:00</div>
+        </div>
+        <div class="timer-lbl">Time Remaining</div>
+      </div>
+
+      <div class="rec-status" id="rec-status">
+        <div class="rec-status-dot"></div>
+        <div class="rec-status-text">Recording Video &amp; Audio</div>
+      </div>
+
+      <button class="btn-done" id="btn-done" onclick="submitResponse()">
+        Done — Next Question
+      </button>
+      <button class="btn-skip" onclick="skipResponse()">Skip this question</button>
+    </div>
+
+    <!-- UPLOADING -->
+    <div class="panel state" id="state-uploading">
+      <div class="panel-title" style="text-align:center">Saving Response</div>
+      <div class="panel-sub" style="text-align:center">Just a moment...</div>
+      <div class="upload-spin"></div>
+      <div class="upload-bar-wrap"><div class="upload-bar" id="upload-bar"></div></div>
+      <div class="upload-lbl" id="upload-lbl">Uploading...</div>
+    </div>
+
+    <!-- SAVED -->
+    <div class="panel state" id="state-saved">
+      <div class="done-icon">✓</div>
+      <div class="panel-title" style="text-align:center;margin-bottom:6px;">Response Saved</div>
+      <div class="panel-sub" style="text-align:center;">Moving to next question...</div>
+    </div>
+
+    <!-- Info -->
+    <div class="info-box">
+      <div class="info-row">
+        <div class="info-label">Question</div>
+        <div class="info-value" id="info-q">— / 5</div>
+      </div>
+      <div class="info-row" style="margin-bottom:0">
+        <div class="info-label">Role</div>
+        <div class="info-value" id="info-role" style="font-size:13px;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">—</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- COMPLETION -->
+<div class="completion" id="completion">
+  <div class="completion-mark">🎉</div>
+  <h1 class="completion-title">Interview Complete</h1>
+  <p class="completion-sub">
+    Thank you so much for your time today. Your responses have been recorded and will be reviewed by the hiring team.
+  </p>
+  <div class="completion-line"></div>
+  <p class="completion-sub">
+    You will receive an email from us if the hiring manager wants to move you forward in the process.
+  </p>
+  <div class="completion-line"></div>
+  <p class="completion-note">— Jenn, AI Recruiter · Next-Jenn</p>
+</div>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// NEXT-JENN — INTERVIEW PAGE v3
+// Updated questions, Rajdhani/grey branding, Daily.co integration
+// ─────────────────────────────────────────────────────────────
+
+const API_BASE   = '/api/interview';
+
+// Keep server alive during interview
+var keepAliveInterval = setInterval(function() {
+  fetch('/health').catch(function(){});
+}, 25000);
+
+// Read params from URL (set by hiring manager page)
+const urlParams    = new URLSearchParams(window.location.search);
+const SESSION_ID    = urlParams.get('session') || '{{SESSION_ID}}';
+const JOB_TITLE     = urlParams.get('job')     || '{{JOB_TITLE}}';
+const CAND_NAME     = urlParams.get('name')    || '{{CAND_NAME}}';
+const CLIENT_EMAIL  = urlParams.get('client')  || '{{CLIENT_EMAIL}}';
+const COMPANY_NAME  = urlParams.get('company') || '{{COMPANY_NAME}}';
+
+// Track video URLs as candidate records each response
+const responseVideos = {};
+
+// ─────────────────────────────────────────────────────────────
+// VIDEO URLS — Cloudflare R2
+// ─────────────────────────────────────────────────────────────
+const VIDEO_URLS = {
+  intro: 'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/intro.mp4',
+  q1:    'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/q1.mp4',
+  q2:    'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/q2.mp4',
+  q3:    'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/q3.mp4',
+  q4:    'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/q4.mp4',
+  final: 'https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/final.mp4',
+};
+
+// ─────────────────────────────────────────────────────────────
+// SEGMENTS — new questions, all 2min max
+// ─────────────────────────────────────────────────────────────
+const SEGMENTS = [
+  {
+    id: 'intro', label: 'Intro',
+    response_type: 'ready_confirm',
+    response_seconds: 0,
+    question: 'My name is Jenn, an AI recruiter who will be interviewing you today. Are you ready?',
+    tip: 'Click "Yes, I\'m Ready" when you\'re set to begin.',
+  },
+  {
+    id: 'q1', label: 'Q1',
+    response_type: 'record',
+    response_seconds: 120,
+    question: 'What is your interest in this position?',
+    tip: 'Share what genuinely draws you to this role and company.',
+  },
+  {
+    id: 'q2', label: 'Q2',
+    response_type: 'record',
+    response_seconds: 120,
+    question: 'Please give a 2-minute summary of your experience relative to this role.',
+    tip: 'Walk us through your most relevant background and achievements.',
+  },
+  {
+    id: 'q3', label: 'Q3',
+    response_type: 'record',
+    response_seconds: 120,
+    question: 'What are 3 words that best describe you?',
+    tip: 'Choose words that reflect how your colleagues would describe you.',
+  },
+  {
+    id: 'q4', label: 'Q4',
+    response_type: 'record',
+    response_seconds: 120,
+    question: 'Can you tell me about a project you were most proud of? What was your role and what was the outcome?',
+    tip: 'Be specific — use a real example and walk us through your contribution.',
+  },
+  {
+    id: 'final', label: 'Final',
+    response_type: 'record',
+    response_seconds: 120,
+    question: 'Are you interested in moving forward? If yes, our team will send you an email with next steps.',
+    tip: 'Be honest — there\'s no wrong answer here.',
+  },
+  {
+    id: 'outro', label: 'Close',
+    response_type: 'none',
+    response_seconds: 0,
+    question: '',
+    tip: '',
+  },
+];
+
+// State
+let currentIndex   = 0;
+let timerInterval  = null;
+let timeRemaining  = 0;
+let totalSeconds   = 0;
+let cameraStream   = null;
+let mediaRecorder  = null;
+let recordedChunks = [];
+let interviewStartedAt = null;
+
+// Clock
+setInterval(() => {
+  document.getElementById('header-clock').textContent =
+    new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true });
+}, 1000);
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', async () => {
+  document.getElementById('info-role').textContent = JOB_TITLE || 'Open Role';
+  buildTrack();
+  // Show start button first so browser allows video autoplay after user interaction
+  showStartScreen();
+});
+
+function showStartScreen() {
+  const overlay = document.getElementById('video-overlay');
+  const text = document.getElementById('overlay-text');
+  overlay.classList.add('show');
+  overlay.style.pointerEvents = 'auto';
+  text.innerHTML = '<div style="text-align:center"><div style="font-size:18px;font-weight:700;color:#1B2A4A;margin-bottom:12px;">Ready to begin?</div><button onclick="startInterview()" style="padding:14px 32px;background:#1B2A4A;color:white;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;letter-spacing:0.08em;">START INTERVIEW</button></div>';
+  text.style.background = 'white';
+  text.style.borderRadius = '16px';
+  text.style.padding = '28px 32px';
+}
+
+async function startInterview() {
+  document.getElementById('video-overlay').style.pointerEvents = 'none';
+  document.getElementById('overlay-text').style.background = '';
+  document.getElementById('overlay-text').style.padding = '';
+  await requestPermissions();
+  loadSegment(0);
+  interviewStartedAt = new Date();
+}
+
+async function requestPermissions() {
+  try {
+    cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+    document.getElementById('pip-video').srcObject = cameraStream;
+    document.getElementById('pip-wrap').classList.add('active');
+  } catch {
+    document.getElementById('perm-alert').classList.add('show');
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// PROGRESS TRACK
+// ─────────────────────────────────────────────────────────────
+function buildTrack() {
+  const display = SEGMENTS.filter(s => s.id !== 'outro');
+  const inner = document.getElementById('track-inner');
+  inner.innerHTML = display.map((seg, i) => `
+    <div class="track-step">
+      <div class="track-dot" id="dot-${i}">${i + 1}</div>
+      ${i < display.length - 1 ? `<div class="track-line" id="tline-${i}"></div>` : ''}
+    </div>
+  `).join('');
+}
+
+function updateTrack(activeIndex) {
+  const display = SEGMENTS.filter(s => s.id !== 'outro');
+  display.forEach((_, i) => {
+    const dot  = document.getElementById(`dot-${i}`);
+    const line = document.getElementById(`tline-${i}`);
+    if (!dot) return;
+    if (i < activeIndex)      { dot.className = 'track-dot done'; dot.textContent = '✓'; if (line) line.classList.add('done'); }
+    else if (i === activeIndex) { dot.className = 'track-dot active'; dot.textContent = i + 1; }
+    else                        { dot.className = 'track-dot'; dot.textContent = i + 1; }
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// SEGMENT LOADING
+// ─────────────────────────────────────────────────────────────
+function loadSegment(index) {
+  const seg = SEGMENTS[index];
+  if (!seg) return;
+  currentIndex = index;
+
+  const qSegs = SEGMENTS.filter(s => s.id !== 'outro' && s.response_type === 'record');
+  const qIdx  = qSegs.findIndex(s => s.id === seg.id);
+
+  document.getElementById('info-q').textContent =
+    qIdx >= 0 ? `${qIdx + 1} / ${qSegs.length}` : '—';
+
+  const trackIdx = SEGMENTS.filter(s => s.id !== 'outro').findIndex(s => s.id === seg.id);
+  updateTrack(trackIdx);
+  document.getElementById('track-q-label').textContent =
+    seg.id === 'outro' ? 'Complete' : trackIdx >= 0 ? `${trackIdx + 1} of ${SEGMENTS.filter(s => s.id !== 'outro').length}` : '—';
+
+  // Question display
+  const qd = document.getElementById('question-display');
+  if (seg.question && seg.id !== 'outro') {
+    qd.classList.add('show');
+    document.getElementById('q-label-text').textContent =
+      seg.id === 'intro' ? 'Jenn Says:' : `Question ${qIdx + 1 >= 0 ? qIdx + 1 : ''}`;
+    document.getElementById('q-body-text').textContent = seg.question;
+  } else {
+    qd.classList.remove('show');
+  }
+
+  showState('waiting');
+  hidePiP();
+  showOverlay('Loading...');
+
+  const video = document.getElementById('jenn-video');
+  const videoUrl = VIDEO_URLS[seg.id];
+
+  if (!videoUrl) {
+    hideOverlay();
+    handleSegmentEnd(seg, index);
+    return;
+  }
+
+  // Fully reset video element before loading new source
+  video.pause();
+  video.removeAttribute('src');
+  video.load();
+  video.src = videoUrl;
+  video.load();
+
+  video.oncanplay = () => {
+    hideOverlay();
+    video.play().catch(() => {
+      showOverlay('Tap to Start');
+      document.getElementById('video-overlay').style.pointerEvents = 'auto';
+      document.getElementById('video-overlay').onclick = () => {
+        video.play();
+        hideOverlay();
+        document.getElementById('video-overlay').style.pointerEvents = 'none';
+        document.getElementById('video-overlay').onclick = null;
+      };
+    });
+  };
+
+  video.onended = () => handleSegmentEnd(seg, index);
+  video.onerror = () => {
+    showOverlay('Tap to Start');
+    document.getElementById('video-overlay').style.pointerEvents = 'auto';
+    document.getElementById('video-overlay').onclick = () => {
+      hideOverlay();
+      handleSegmentEnd(seg, index);
+      document.getElementById('video-overlay').style.pointerEvents = 'none';
+      document.getElementById('video-overlay').onclick = null;
+    };
+  };
+}
+
+function handleSegmentEnd(seg, index) {
+  if (seg.id === 'outro') { completeInterview(); return; }
+  if (seg.response_type === 'ready_confirm') { showState('ready'); return; }
+  if (seg.response_type === 'none')          { loadSegment(index + 1); return; }
+  if (seg.response_type === 'record')        { openRecordWindow(seg); return; }
+}
+
+// ─────────────────────────────────────────────────────────────
+// READY CONFIRMATION
+// ─────────────────────────────────────────────────────────────
+function confirmReady(isReady) {
+  if (!isReady) {
+    // Replay intro
+    loadSegment(0);
+    return;
+  }
+  // Advance to Q1
+  loadSegment(1);
+}
+
+// ─────────────────────────────────────────────────────────────
+// RECORD WINDOW
+// ─────────────────────────────────────────────────────────────
+function openRecordWindow(seg) {
+  showState('respond');
+  document.getElementById('respond-title').textContent = seg.label === 'final' ? 'Your Answer' : `Your Response`;
+  timeRemaining = seg.response_seconds;
+  totalSeconds  = seg.response_seconds;
+  updateTimerDisplay(timeRemaining);
+  resetRing();
+  startRecording();
+  showPiP();
+  startCountdown();
+}
+
+function startCountdown() {
+  clearInterval(timerInterval);
+  const fill = document.getElementById('ring-fill');
+  timerInterval = setInterval(() => {
+    timeRemaining--;
+    updateTimerDisplay(timeRemaining);
+    fill.style.strokeDashoffset = 276 * (1 - timeRemaining / totalSeconds);
+    if (timeRemaining <= 15) fill.classList.add('urgent');
+    if (timeRemaining <= 0) { clearInterval(timerInterval); submitResponse(); }
+  }, 1000);
+}
+
+function updateTimerDisplay(s) {
+  const m = Math.floor(s / 60);
+  document.getElementById('timer-num').textContent = `${m}:${(s % 60).toString().padStart(2,'0')}`;
+}
+
+function resetRing() {
+  const fill = document.getElementById('ring-fill');
+  fill.style.strokeDashoffset = '0';
+  fill.classList.remove('urgent');
+}
+
+// ─────────────────────────────────────────────────────────────
+// RECORDING
+// ─────────────────────────────────────────────────────────────
+async function startRecording() {
+  try {
+    if (!cameraStream || cameraStream.getTracks().some(t => t.readyState === 'ended')) {
+      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      document.getElementById('pip-video').srcObject = cameraStream;
+    }
+
+    recordedChunks = [];
+    const opts = { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' : 'video/webm' };
+    mediaRecorder = new MediaRecorder(cameraStream, opts);
+    mediaRecorder.ondataavailable = e => { if (e.data?.size > 0) recordedChunks.push(e.data); };
+    mediaRecorder.start(500);
+    document.getElementById('rec-status').classList.add('active');
+    document.getElementById('pip-rec').classList.add('active');
+  } catch {
+    document.getElementById('perm-alert').classList.add('show');
+  }
+}
+
+function stopRecording() {
+  return new Promise(resolve => {
+    if (!mediaRecorder || mediaRecorder.state === 'inactive') { resolve(null); return; }
+    mediaRecorder.onstop = () => {
+      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      resolve(blob.size > 0 ? blob : null);
+    };
+    mediaRecorder.stop();
+    document.getElementById('rec-status').classList.remove('active');
+    document.getElementById('pip-rec').classList.remove('active');
+  });
+}
+
+// ─────────────────────────────────────────────────────────────
+// SUBMIT / SKIP
+// ─────────────────────────────────────────────────────────────
+async function submitResponse() {
+  clearInterval(timerInterval);
+  showState('uploading');
+  hidePiP();
+
+  // Capture segment ID NOW before currentIndex changes
+  const thisSegId  = SEGMENTS[currentIndex].id;
+  const thisSegIdx = currentIndex;
+
+  const blob = await stopRecording();
+  let videoUrl = null;
+
+  if (!blob || blob.size === 0) {
+    document.getElementById('upload-lbl').textContent = 'No recording (chunks:' + recordedChunks.length + ')';
+  } else {
+    document.getElementById('upload-lbl').textContent = 'Uploading ' + (blob.size/1024).toFixed(0) + 'KB...';
+    try {
+      videoUrl = await uploadWithProgress(blob, thisSegId);
+      document.getElementById('upload-lbl').textContent = 'Saved!';
+    } catch (e) {
+      document.getElementById('upload-lbl').textContent = 'Upload error: ' + e.message;
+    }
+  }
+
+  // Store video URL using captured segment ID
+  if (videoUrl) responseVideos[thisSegId] = videoUrl;
+
+  // Advance
+  showState('saved');
+  await delay(1400);
+  const next = thisSegIdx + 1;
+  if (next < SEGMENTS.length) loadSegment(next); else completeInterview();
+
+  // Fire and forget API call in background
+  fetch(`${API_BASE}/${SESSION_ID}/submit-response`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ segment_index: thisSegIdx, segment_id: thisSegId, video_url: videoUrl }),
+  }).catch(() => {});
+}
+
+async function skipResponse() {
+  clearInterval(timerInterval);
+  await stopRecording();
+  hidePiP();
+  try {
+    const res = await fetch(`${API_BASE}/${SESSION_ID}/submit-response`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ segment_index: currentIndex, segment_id: SEGMENTS[currentIndex].id, video_url: null }),
+    });
+    const data = await res.json();
+    if (data.action === 'play_next') loadSegment(data.next_segment.index);
+    else completeInterview();
+  } catch {
+    const next = currentIndex + 1;
+    if (next < SEGMENTS.length) loadSegment(next); else completeInterview();
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// UPLOAD WITH PROGRESS
+// ─────────────────────────────────────────────────────────────
+async function uploadWithProgress(blob, segId) {
+  var fd = new FormData();
+  fd.append('video',               blob, SESSION_ID + '_' + segId + '_' + Date.now() + '.webm');
+  fd.append('session_id',          SESSION_ID);
+  fd.append('segment_index',       currentIndex);
+  fd.append('segment_id',          segId);
+  fd.append('cand_name',           CAND_NAME           || '');
+  fd.append('job_title',           JOB_TITLE           || '');
+  fd.append('company_name',        COMPANY_NAME        || '');
+  fd.append('client_email',        CLIENT_EMAIL        || '');
+  fd.append('hiring_manager_name', HIRING_MANAGER_NAME || '');
+
+  document.getElementById('upload-lbl').textContent = 'Uploading...';
+
+  try {
+    var resp = await fetch('/api/upload', {
+      method: 'POST',
+      body:   fd,
+    });
+
+    if (!resp.ok) {
+      var errText = await resp.text();
+      document.getElementById('upload-lbl').textContent = 'Upload error ' + resp.status;
+      throw new Error('Upload failed ' + resp.status + ': ' + errText.substring(0,100));
+    }
+
+    var result = await resp.json();
+    document.getElementById('upload-lbl').textContent = 'Saved!';
+    return result.video_url;
+
+  } catch(e) {
+    document.getElementById('upload-lbl').textContent = 'Error: ' + e.message.substring(0,60);
+    throw e;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// COMPLETE INTERVIEW
+// ─────────────────────────────────────────────────────────────
+async function completeInterview() {
+  clearInterval(keepAliveInterval);
+  if (cameraStream) { cameraStream.getTracks().forEach(t => t.stop()); }
+  document.getElementById('interview-main').style.display = 'none';
+  document.getElementById('completion').classList.add('active');
+
+  // Wait briefly to ensure all uploads have stored their URLs
+  await delay(2000);
+
+  // Send transcript email to hiring manager
+  const clientEmail    = CLIENT_EMAIL  || 'interview@next-jennconsulting.com';
+  const candidateName  = CAND_NAME    || 'Candidate';
+  const jobTitle       = JOB_TITLE    || 'Open Role';
+  console.log('Sending transcript to:', clientEmail, 'name:', candidateName, 'job:', jobTitle, 'videos:', JSON.stringify(responseVideos));
+
+  try {
+    const transcripts = Object.entries(responseVideos).map(([seg_id, video_url]) => ({
+      segment_id: seg_id,
+      transcript: '[Video response — click Watch Response to view]',
+      video_url:  video_url,
+    }));
+
+    const resp = await fetch('/api/send-transcript', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        candidate_name:      candidateName,
+        candidate_email:     '',
+        job_title:           jobTitle,
+        company_name:        COMPANY_NAME  || '',
+        hiring_manager_name: HIRING_MANAGER_NAME || '',
+        client_email:        clientEmail,
+        interview_date_str:  new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }),
+        transcripts:         transcripts,
+      }),
+    });
+    const result = await resp.json();
+    console.log('Transcript email result:', JSON.stringify(result));
+  } catch (e) { console.error('Transcript email failed:', e.message); }
+}
+
+// ─────────────────────────────────────────────────────────────
+// UI HELPERS
+// ─────────────────────────────────────────────────────────────
+function showState(s) {
+  ['waiting','ready','respond','uploading','saved'].forEach(id => {
+    document.getElementById(`state-${id}`).classList.toggle('active', id === s);
+  });
+}
+
+function showOverlay(t) { document.getElementById('overlay-text').textContent = t; document.getElementById('video-overlay').classList.add('show'); }
+function hideOverlay()  { document.getElementById('video-overlay').classList.remove('show'); }
+function showPiP() { document.getElementById('pip-wrap').classList.add('active'); }
+function hidePiP() { document.getElementById('pip-wrap').classList.remove('active'); }
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+</script>
+</body>
+</html>
