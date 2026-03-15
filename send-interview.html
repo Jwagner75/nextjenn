@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Send Interview — Next-Jenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --navy:#1B2A4A; --silver:#8892A4; --light:#F0F2F5; --white:#fff; --border:#D8DCE6; --accent:#4A6FA5; --green:#2E7D5E; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'DM Sans',sans-serif; background:var(--light); min-height:100vh; color:#2D3142; }
+  nav { background:var(--navy); padding:18px 40px; display:flex; align-items:center; justify-content:space-between; }
+  .nav-logo { font-family:'Rajdhani',sans-serif; font-size:22px; font-weight:700; color:#fff; letter-spacing:.08em; }
+  .nav-tag  { font-size:11px; color:var(--silver); letter-spacing:.15em; text-transform:uppercase; }
+  .page { max-width:580px; margin:48px auto; padding:0 20px; }
+  .page-title { font-family:'Rajdhani',sans-serif; font-size:30px; font-weight:700; color:var(--navy); margin-bottom:6px; }
+  .page-sub   { font-size:15px; color:var(--silver); margin-bottom:28px; line-height:1.6; }
+  .card { background:#fff; border-radius:16px; padding:32px; box-shadow:0 4px 24px rgba(27,42,74,.08); border:1px solid var(--border); }
+  .section-label { font-size:11px; font-weight:700; color:var(--silver); text-transform:uppercase; letter-spacing:.15em; margin-bottom:18px; padding-bottom:10px; border-bottom:1px solid var(--border); }
+  .section-gap { height:20px; border-top:1px solid var(--border); margin:8px 0 24px; }
+  .field { margin-bottom:18px; }
+  label { display:block; font-size:12px; font-weight:500; color:var(--navy); text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; }
+  input { width:100%; padding:12px 16px; border:1.5px solid var(--border); border-radius:10px; font-size:15px; font-family:'DM Sans',sans-serif; color:#2D3142; outline:none; transition:border-color .2s; }
+  input:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(74,111,165,.12); }
+  input::placeholder { color:#B0B7C3; }
+  .hint { font-size:12px; color:var(--silver); margin-top:5px; }
+  .btn { width:100%; padding:15px; background:var(--navy); color:#fff; border:none; border-radius:10px; font-family:'Rajdhani',sans-serif; font-size:16px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:background .2s; margin-top:8px; display:flex; align-items:center; justify-content:center; gap:10px; }
+  .btn:hover { background:#243760; }
+  .btn:disabled { background:var(--silver); cursor:not-allowed; }
+  .error { background:#FFF0F0; border:1px solid #FFB3B3; border-radius:8px; padding:12px 16px; font-size:13px; color:#C0392B; margin-top:16px; display:none; }
+  .success-card { background:#fff; border-radius:16px; padding:36px 32px; box-shadow:0 4px 24px rgba(27,42,74,.08); border:1px solid var(--border); text-align:center; display:none; }
+  .success-icon { width:64px; height:64px; background:#EAF4EE; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto 18px; font-size:28px; }
+  .success-title { font-family:'Rajdhani',sans-serif; font-size:26px; font-weight:700; color:var(--navy); margin-bottom:8px; }
+  .success-sub { font-size:14px; color:var(--silver); line-height:1.7; margin-bottom:24px; }
+  .info-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:20px; }
+  .info-box { background:var(--light); border-radius:10px; padding:14px 16px; border:1px solid var(--border); text-align:left; }
+  .info-box-label { font-size:11px; font-weight:600; color:var(--silver); text-transform:uppercase; letter-spacing:.1em; margin-bottom:4px; }
+  .info-box-value { font-size:15px; font-weight:500; color:var(--navy); }
+  .btn-again { padding:12px 28px; background:transparent; color:var(--navy); border:1.5px solid var(--navy); border-radius:10px; font-family:'Rajdhani',sans-serif; font-size:14px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; cursor:pointer; transition:all .2s; }
+  .btn-again:hover { background:var(--navy); color:#fff; }
+</style>
+</head>
+<body>
+<nav>
+  <span class="nav-logo">NEXT-JENN</span>
+  <span class="nav-tag">AI Recruiter Interview</span>
+</nav>
+
+<div class="page">
+  <h1 class="page-title">Send an Interview</h1>
+  <p class="page-sub">Fill in the details below. The candidate will receive a link to schedule their interview.</p>
+
+  <div class="card" id="form-card">
+    <div class="section-label">Client Information</div>
+
+    <div class="field">
+      <label for="company">Company Name</label>
+      <input type="text" id="company" placeholder="e.g. Acme Corporation" />
+    </div>
+    <div class="field">
+      <label for="manager">Hiring Manager Name</label>
+      <input type="text" id="manager" placeholder="e.g. Jennifer Wagner" />
+    </div>
+    <div class="field">
+      <label for="client-email">Hiring Manager Email</label>
+      <input type="email" id="client-email" placeholder="e.g. you@company.com" />
+      <p class="hint">Transcript will be sent here after the interview.</p>
+    </div>
+    <div class="field">
+      <label for="job">Job Title</label>
+      <input type="text" id="job" placeholder="e.g. Marketing Manager" />
+    </div>
+
+    <div class="section-gap"></div>
+    <div class="section-label">Candidate Information</div>
+
+    <div class="field">
+      <label for="cand-name">Candidate Name</label>
+      <input type="text" id="cand-name" placeholder="e.g. Sarah Johnson" />
+    </div>
+    <div class="field">
+      <label for="cand-email">Candidate Email</label>
+      <input type="email" id="cand-email" placeholder="e.g. sarah@email.com" />
+      <p class="hint">Scheduling link will be sent here.</p>
+    </div>
+
+    <button class="btn" id="send-btn" onclick="sendInterview()">Send Interview Link</button>
+    <div class="error" id="error-msg"></div>
+  </div>
+
+  <div class="success-card" id="success-card">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Interview Sent!</div>
+    <p class="success-sub">
+      <strong id="confirm-cand"></strong> has been emailed a link to schedule their interview.<br>
+      You'll receive the transcript at <strong id="confirm-client"></strong> once they complete it.
+    </p>
+    <div class="info-row">
+      <div class="info-box">
+        <div class="info-box-label">Candidate</div>
+        <div class="info-box-value" id="confirm-name"></div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-label">Role</div>
+        <div class="info-box-value" id="confirm-role"></div>
+      </div>
+    </div>
+    <button class="btn-again" onclick="sendAnother()">Send Another Interview</button>
+  </div>
+</div>
+
+<script>
+async function sendInterview() {
+  var company     = document.getElementById('company').value.trim();
+  var manager     = document.getElementById('manager').value.trim();
+  var clientEmail = document.getElementById('client-email').value.trim();
+  var job         = document.getElementById('job').value.trim();
+  var candName    = document.getElementById('cand-name').value.trim();
+  var candEmail   = document.getElementById('cand-email').value.trim();
+
+  if (!company || !manager || !clientEmail || !job || !candName || !candEmail) {
+    showError('Please fill in all fields.'); return;
+  }
+  if (!validEmail(clientEmail) || !validEmail(candEmail)) {
+    showError('Please enter valid email addresses.'); return;
+  }
+
+  var btn = document.getElementById('send-btn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  hideError();
+
+  try {
+    var resp = await fetch('/api/send-interview', {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_name:        company,
+        hiring_manager_name: manager,
+        client_email:        clientEmail,
+        job_title:           job,
+        cand_name:           candName,
+        cand_email:          candEmail,
+      }),
+    });
+    var data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed');
+
+    document.getElementById('confirm-cand').textContent   = candName;
+    document.getElementById('confirm-client').textContent = clientEmail;
+    document.getElementById('confirm-name').textContent   = candName;
+    document.getElementById('confirm-role').textContent   = job;
+    document.getElementById('form-card').style.display    = 'none';
+    document.getElementById('success-card').style.display = 'block';
+
+  } catch(e) {
+    showError('Something went wrong: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Send Interview Link';
+  }
+}
+
+function sendAnother() {
+  ['company','manager','client-email','job','cand-name','cand-email'].forEach(function(id) {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('form-card').style.display    = 'block';
+  document.getElementById('success-card').style.display = 'none';
+  var btn = document.getElementById('send-btn');
+  btn.disabled = false; btn.textContent = 'Send Interview Link';
+}
+
+function showError(msg) { var e = document.getElementById('error-msg'); e.textContent = msg; e.style.display = 'block'; }
+function hideError()    { document.getElementById('error-msg').style.display = 'none'; }
+function validEmail(e)  { return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
+</script>
+</body>
+</html>
