@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Apply — Next-Jenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B2A4A;--navy-mid:#243760;--silver:#8892A4;--light:#F0F2F5;--white:#fff;--border:#D8DCE6;--accent:#4A6FA5;--green:#2E7D5E;--red:#E05252;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);min-height:100vh;color:#2D3142;}
+nav{background:var(--navy);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:.08em;text-decoration:none;}
+.nav-logo span{color:var(--silver);}
+.page{max-width:620px;margin:40px auto;padding:0 20px 80px;}
+.job-bar{background:var(--navy);border-radius:12px;padding:18px 22px;margin-bottom:28px;}
+.job-bar-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:#fff;margin-bottom:2px;}
+.job-bar-meta{font-size:13px;color:rgba(255,255,255,.6);}
+.job-desc-box{background:rgba(255,255,255,.08);border-radius:8px;padding:14px 16px;margin-top:12px;font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;max-height:100px;overflow-y:auto;}
+.steps{display:flex;align-items:center;margin-bottom:32px;}
+.s-num{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--silver);flex-shrink:0;transition:all .3s;}
+.s-num.active{border-color:var(--navy);background:var(--navy);color:#fff;}
+.s-num.done{border-color:var(--green);background:var(--green);color:#fff;}
+.s-label{font-size:11px;font-weight:600;color:var(--silver);text-transform:uppercase;letter-spacing:.08em;margin-left:6px;}
+.s-label.active{color:var(--navy);}
+.s-line{flex:1;height:2px;background:var(--border);margin:0 8px;}
+.s-line.done{background:var(--green);}
+.card{background:var(--white);border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(27,42,74,.07);border:1px solid var(--border);display:none;}
+.card.active{display:block;}
+.card-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--silver);margin-bottom:24px;line-height:1.6;}
+.field{margin-bottom:16px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px;}
+label{display:block;font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.opt{font-weight:400;text-transform:none;letter-spacing:0;color:var(--silver);}
+input,select{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:#2D3142;outline:none;transition:border-color .2s;background:var(--white);}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(74,111,165,.1);}
+.radio-group{display:flex;gap:10px;flex-wrap:wrap;}
+.radio-opt{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;font-size:14px;}
+.radio-opt:hover{border-color:var(--accent);}
+.radio-opt.selected{border-color:var(--navy);background:rgba(27,42,74,.04);font-weight:600;color:var(--navy);}
+.radio-dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;transition:all .2s;}
+.radio-opt.selected .radio-dot{border-color:var(--navy);background:var(--navy);}
+.q-item{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;}
+.q-text{font-size:15px;font-weight:500;color:var(--navy);margin-bottom:14px;line-height:1.5;}
+.q-options{display:flex;gap:10px;flex-wrap:wrap;}
+.q-opt{padding:10px 20px;border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;color:#2D3142;transition:all .2s;background:var(--white);}
+.q-opt:hover{border-color:var(--accent);}
+.q-opt.sel-yes{border-color:var(--green);background:rgba(46,125,94,.08);color:var(--green);font-weight:600;}
+.q-opt.sel-no{border-color:var(--red);background:rgba(224,82,82,.06);color:var(--red);font-weight:600;}
+.consent-scroll{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:20px;max-height:200px;overflow-y:auto;font-size:13px;color:#555B6E;line-height:1.8;margin-bottom:20px;}
+.consent-scroll h4{font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em;}
+.sig-input{width:100%;padding:14px;border:2px solid var(--border);border-radius:8px;font-size:16px;font-family:'DM Sans',sans-serif;color:var(--navy);outline:none;font-style:italic;transition:border-color .2s;margin-bottom:6px;}
+.sig-input:focus{border-color:var(--navy);}
+.sig-note{font-size:11px;color:var(--silver);margin-bottom:16px;}
+.check-row{display:flex;align-items:flex-start;gap:12px;padding:14px;background:rgba(27,42,74,.03);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;transition:all .2s;margin-bottom:12px;}
+.check-row.checked{border-color:var(--navy);background:rgba(27,42,74,.04);}
+.check-row input{width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:var(--navy);}
+.check-text{font-size:13px;color:#2D3142;line-height:1.6;}
+.btn{width:100%;padding:14px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;margin-top:8px;}
+.btn:hover{background:var(--navy-mid);}
+.btn:disabled{background:var(--silver);cursor:not-allowed;}
+.btn-back{width:100%;padding:11px;background:transparent;color:var(--silver);border:1.5px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;margin-top:8px;}
+.err{background:#FFF0F0;border:1px solid #FFB3B3;border-radius:8px;padding:12px 16px;font-size:13px;color:#C0392B;margin-top:12px;display:none;}
+.result{text-align:center;padding:48px 20px;}
+.result-icon{font-size:56px;margin-bottom:16px;}
+.result-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.result-sub{font-size:15px;color:var(--silver);line-height:1.7;max-width:420px;margin:0 auto;}
+.score-box{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:24px;text-align:left;}
+.score-label{font-size:11px;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;}
+.score-bar{background:var(--border);border-radius:6px;height:8px;margin:10px 0;overflow:hidden;}
+.score-fill{height:100%;background:var(--green);border-radius:6px;}
+@media(max-width:600px){.field-row{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav><a href="/" class="nav-logo">NEXT<span>-JENN</span></a></nav>
+
+<div class="page">
+  <div id="loading" style="text-align:center;padding:80px 20px;">
+    <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+    <div style="font-size:16px;color:var(--silver);">Loading...</div>
+  </div>
+
+  <div class="job-bar" id="job-bar" style="display:none;">
+    <div class="job-bar-title" id="jb-title"></div>
+    <div class="job-bar-meta" id="jb-meta"></div>
+    <div class="job-desc-box" id="jb-desc" style="display:none;"></div>
+  </div>
+
+  <div class="steps" id="steps-bar" style="display:none;">
+    <div class="s-num active" id="sn1">1</div><div class="s-label active" id="sl1">Application</div>
+    <div class="s-line" id="sl-1"></div>
+    <div class="s-num" id="sn2">2</div><div class="s-label" id="sl2">Screening</div>
+    <div class="s-line" id="sl-2"></div>
+    <div class="s-num" id="sn3">3</div><div class="s-label" id="sl3">Consent</div>
+  </div>
+
+  <!-- STEP 1 -->
+  <div class="card" id="step1">
+    <div class="card-title">Your Information</div>
+    <p class="card-sub">Please complete your application. All fields are required unless marked optional.</p>
+    <div class="field-row">
+      <div class="field"><label>First Name</label><input type="text" id="a-fname" placeholder="Sarah" /></div>
+      <div class="field"><label>Last Name</label><input type="text" id="a-lname" placeholder="Johnson" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Email Address</label><input type="email" id="a-email" placeholder="sarah@email.com" /></div>
+      <div class="field"><label>Phone Number</label><input type="tel" id="a-phone" placeholder="(555) 555-5555" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>City, State</label><input type="text" id="a-location" placeholder="Chicago, IL" /></div>
+      <div class="field"><label>LinkedIn URL <span class="opt">(optional)</span></label><input type="url" id="a-linkedin" placeholder="linkedin.com/in/..." /></div>
+    </div>
+    <div class="field">
+      <label>Are you legally authorized to work in the United States?</label>
+      <div class="radio-group" id="rg-auth">
+        <div class="radio-opt" onclick="selRadio('auth','yes',this)"><div class="radio-dot"></div>Yes</div>
+        <div class="radio-opt" onclick="selRadio('auth','no',this)"><div class="radio-dot"></div>No</div>
+      </div>
+    </div>
+    <div class="field">
+      <label>Do you now or in the future require visa sponsorship?</label>
+      <div class="radio-group" id="rg-sponsor">
+        <div class="radio-opt" onclick="selRadio('sponsor','yes',this)"><div class="radio-dot"></div>Yes</div>
+        <div class="radio-opt" onclick="selRadio('sponsor','no',this)"><div class="radio-dot"></div>No</div>
+      </div>
+    </div>
+    <button class="btn" onclick="step1Next()">Continue to Screening &rarr;</button>
+    <div class="err" id="err1"></div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="card" id="step2">
+    <div class="card-title">Screening Questions</div>
+    <p class="card-sub">Please answer honestly. Candidates who meet our requirements will be invited to interview.</p>
+    <div id="sq-list"></div>
+    <button class="btn" onclick="step2Next()">Submit Answers &rarr;</button>
+    <button class="btn-back" onclick="setStep(1)">← Back</button>
+    <div class="err" id="err2"></div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="card" id="step3">
+    <div class="card-title">Recording Consent</div>
+    <p class="card-sub">Please read and sign the recording consent agreement.</p>
+    <div class="consent-scroll">
+      <h4>Video Recording Consent Agreement</h4>
+      <p><strong>1. Recording:</strong> Your video, audio, or written responses will be recorded during this interview and stored securely on the Next-Jenn platform.</p><br>
+      <p><strong>2. Use of Recordings:</strong> Your recorded responses will be shared only with the hiring manager for the position you are applying for. They will not be used for any other purpose without your explicit consent.</p><br>
+      <p><strong>3. Storage & Retention:</strong> Interview recordings are retained for 30 days following the completion of the hiring process and are then permanently deleted.</p><br>
+      <p><strong>4. Privacy:</strong> Your personal information is handled in accordance with applicable privacy laws. We do not sell or share your data with third parties outside of the hiring process.</p><br>
+      <p><strong>5. Voluntary Participation:</strong> Your participation is voluntary. You may withdraw at any time prior to submitting your responses.</p><br>
+      <p><strong>6. AI Technology:</strong> This interview is conducted by an AI recruiter. Your responses are reviewed by human hiring managers and are not automatically scored or rejected by AI.</p><br>
+      <p><strong>7. Equal Opportunity:</strong> Next-Jenn is committed to providing every qualified candidate an equal opportunity to be heard. The same questions are asked of every candidate in the same format.</p>
+    </div>
+    <input type="text" class="sig-input" id="a-sig" placeholder="Type your full legal name" />
+    <p class="sig-note">By typing your name above, you provide your electronic signature and agree to this consent agreement.</p>
+    <div class="check-row" id="cb-row" onclick="toggleConsent()">
+      <input type="checkbox" id="cb-check" />
+      <div class="check-text"><strong>I have read and agree</strong> to the recording consent agreement above.</div>
+    </div>
+    <button class="btn" onclick="submitApp()">Complete Application &rarr;</button>
+    <button class="btn-back" onclick="setStep(2)">← Back</button>
+    <div class="err" id="err3"></div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result-wrap" style="display:none;">
+    <div class="card active"><div id="result-content"></div></div>
+  </div>
+</div>
+
+<script>
+var JOB_ID = window.location.pathname.split('/').pop();
+var job = null;
+var sqList = [];
+var answers = {};
+var radios = { auth: '', sponsor: '' };
+var consented = false;
+
+async function init() {
+  try {
+    var r = await fetch('/api/jobs/' + JOB_ID);
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error || 'Not found');
+    job = d;
+    sqList = d.screening_questions || [];
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('job-bar').style.display = 'block';
+    document.getElementById('steps-bar').style.display = 'flex';
+    document.getElementById('jb-title').textContent = d.title + (d.company_name ? ' — ' + d.company_name : '');
+    document.getElementById('jb-meta').textContent = [d.location, d.job_type].filter(Boolean).join(' · ');
+    if (d.description) {
+      var db = document.getElementById('jb-desc');
+      db.textContent = d.description.substring(0, 300) + (d.description.length > 300 ? '...' : '');
+      db.style.display = 'block';
+    }
+    document.title = 'Apply — ' + d.title;
+    renderSQ();
+    setStep(1);
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '<div style="font-size:32px;margin-bottom:12px;">❌</div><div style="font-size:16px;color:#888;">Job not found or no longer available.</div>';
+  }
+}
+
+function setStep(n) {
+  for (var i = 1; i <= 3; i++) {
+    document.getElementById('step' + i).classList.toggle('active', i === n);
+    var sn = document.getElementById('sn' + i);
+    var sl = document.getElementById('sl' + i);
+    if (i < n)       { sn.className = 's-num done'; sn.textContent = '✓'; sl.className = 's-label'; }
+    else if (i === n){ sn.className = 's-num active'; sn.textContent = i; sl.className = 's-label active'; }
+    else             { sn.className = 's-num'; sn.textContent = i; sl.className = 's-label'; }
+    if (i < 3) document.getElementById('sl-' + i).className = 's-line' + (i < n ? ' done' : '');
+  }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function renderSQ() {
+  var el = document.getElementById('sq-list');
+  el.innerHTML = sqList.map(function(q, i) {
+    return '<div class="q-item"><div class="q-text">Q' + (i+1) + '. ' + esc(q.question) + '</div>'
+      + '<div class="q-options">'
+      + '<div class="q-opt" id="qa' + i + 'y" onclick="selA(' + i + ',\'yes\')">Yes</div>'
+      + '<div class="q-opt" id="qa' + i + 'n" onclick="selA(' + i + ',\'no\')">No</div>'
+      + '</div></div>';
+  }).join('');
+}
+
+function selA(i, v) {
+  answers[i] = v;
+  document.getElementById('qa' + i + 'y').className = 'q-opt' + (v === 'yes' ? ' sel-yes' : '');
+  document.getElementById('qa' + i + 'n').className = 'q-opt' + (v === 'no'  ? ' sel-no'  : '');
+}
+
+function selRadio(g, v, el) {
+  radios[g] = v;
+  document.querySelectorAll('#rg-' + g + ' .radio-opt').forEach(function(o) { o.classList.remove('selected'); });
+  el.classList.add('selected');
+}
+
+function toggleConsent() {
+  consented = !consented;
+  document.getElementById('cb-check').checked = consented;
+  document.getElementById('cb-row').classList.toggle('checked', consented);
+}
+
+function step1Next() {
+  var fn = g('a-fname'), ln = g('a-lname'), em = g('a-email'), ph = g('a-phone'), lo = g('a-location');
+  if (!fn || !ln || !em || !ph || !lo) { showE(1, 'Please fill in all required fields.'); return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) { showE(1, 'Please enter a valid email.'); return; }
+  if (!radios.auth)   { showE(1, 'Please answer the work authorization question.'); return; }
+  if (!radios.sponsor){ showE(1, 'Please answer the sponsorship question.'); return; }
+  hideE(1); setStep(2);
+}
+
+function step2Next() {
+  var missing = sqList.some(function(_, i) { return answers[i] === undefined; });
+  if (missing) { showE(2, 'Please answer all screening questions.'); return; }
+  hideE(2); setStep(3);
+}
+
+async function submitApp() {
+  if (!g('a-sig')) { showE(3, 'Please type your full name as your electronic signature.'); return; }
+  if (!consented)  { showE(3, 'Please check the consent box to continue.'); return; }
+  var btn = document.querySelector('#step3 .btn');
+  btn.disabled = true; btn.textContent = 'Submitting...';
+  try {
+    var r = await fetch('/api/apply/' + JOB_ID, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        first_name: g('a-fname'), last_name: g('a-lname'),
+        email: g('a-email'), phone: g('a-phone'),
+        location: g('a-location'), linkedin_url: g('a-linkedin'),
+        authorized: radios.auth, sponsorship: radios.sponsor,
+        signature: g('a-sig'), answers: answers,
+      })
+    });
+    var d = await r.json();
+    showResult(d);
+  } catch(e) {
+    showE(3, 'Something went wrong. Please try again.');
+    btn.disabled = false; btn.textContent = 'Complete Application →';
+  }
+}
+
+function showResult(d) {
+  document.querySelectorAll('.card').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('steps-bar').style.display = 'none';
+  document.getElementById('result-wrap').style.display = 'block';
+  var html = '';
+  if (d.status === 'declined_min' || d.status === 'declined_score') {
+    html = '<div class="result"><div class="result-icon">📋</div>'
+      + '<div class="result-title">Thank You for Applying</div>'
+      + '<p class="result-sub">Thank you for your interest in this position. After reviewing your application, we are unable to move forward at this time. We appreciate the time you invested and wish you the very best in your search.</p></div>';
+  } else {
+    html = '<div class="result"><div class="result-icon">🎉</div>'
+      + '<div class="result-title">Congratulations!</div>'
+      + '<p class="result-sub">You\'ve passed the initial screening. A scheduling link for your interview with Jenn has been sent to <strong>' + (d.email||'your email') + '</strong>. Please check your inbox and choose a time that works for you.</p>'
+      + '<div class="score-box"><div class="score-label">Your Screening Score</div>'
+      + '<div style="display:flex;align-items:center;gap:12px;">'
+      + '<div class="score-bar" style="flex:1;"><div class="score-fill" style="width:' + Math.round((d.score||0)/(d.max_score||1)*100) + '%;"></div></div>'
+      + '<div style="font-family:\'Rajdhani\',sans-serif;font-size:18px;font-weight:700;color:var(--navy);">' + (d.score||0) + '/' + (d.max_score||0) + '</div>'
+      + '</div><div style="font-size:12px;color:var(--silver);margin-top:8px;">Check your email for your interview scheduling link.</div></div></div>';
+  }
+  document.getElementById('result-content').innerHTML = html;
+}
+
+function g(id) { return document.getElementById(id).value.trim(); }
+function showE(n, m) { var e = document.getElementById('err' + n); e.textContent = m; e.style.display = 'block'; }
+function hideE(n) { document.getElementById('err' + n).style.display = 'none'; }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+</body>
+</html>
