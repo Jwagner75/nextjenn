@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard — Next-Jenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B2A4A;--navy-mid:#243760;--silver:#8892A4;--light:#F0F2F5;--white:#fff;--border:#D8DCE6;--accent:#4A6FA5;--green:#2E7D5E;--gold:#C9963A;--red:#E05252;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);min-height:100vh;color:#2D3142;}
+nav{background:var(--navy);padding:16px 40px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:.08em;text-decoration:none;}
+.nav-logo span{color:var(--silver);}
+.nav-right{display:flex;align-items:center;gap:16px;}
+.nav-link{font-size:13px;color:rgba(255,255,255,.7);text-decoration:none;transition:color .2s;}
+.nav-link:hover{color:#fff;}
+.nav-btn{padding:8px 18px;background:var(--white);color:var(--navy);border:none;border-radius:8px;font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:none;}
+.main{max-width:1200px;margin:0 auto;padding:32px 24px;}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;flex-wrap:wrap;gap:16px;}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:28px;font-weight:700;color:var(--navy);}
+.page-sub{font-size:13px;color:var(--silver);margin-top:2px;}
+.btn-new{padding:12px 24px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+.btn-new:hover{background:var(--navy-mid);}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px;}
+.stat-card{background:var(--white);border-radius:12px;padding:20px 24px;border:1px solid var(--border);}
+.stat-num{font-family:'Rajdhani',sans-serif;font-size:36px;font-weight:700;color:var(--navy);line-height:1;}
+.stat-label{font-size:12px;color:var(--silver);margin-top:4px;text-transform:uppercase;letter-spacing:.08em;}
+/* Jobs grid */
+.section-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
+.jobs-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:40px;}
+.job-card{background:var(--white);border-radius:12px;padding:24px;border:1px solid var(--border);transition:all .2s;cursor:pointer;}
+.job-card:hover{box-shadow:0 8px 32px rgba(27,42,74,.1);transform:translateY(-2px);}
+.job-card-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;}
+.job-title{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--navy);}
+.job-meta{font-size:12px;color:var(--silver);margin-top:2px;}
+.status-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;flex-shrink:0;}
+.status-active{background:rgba(46,125,94,.1);color:var(--green);}
+.status-paused{background:rgba(201,150,58,.1);color:var(--gold);}
+.status-closed{background:rgba(224,82,82,.08);color:var(--red);}
+.job-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);}
+.job-stat{text-align:center;}
+.job-stat-num{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:var(--navy);}
+.job-stat-label{font-size:10px;color:var(--silver);text-transform:uppercase;letter-spacing:.08em;}
+.job-card-footer{display:flex;gap:8px;margin-top:16px;}
+.btn-sm{padding:7px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;border:1.5px solid var(--border);background:transparent;color:var(--silver);}
+.btn-sm:hover{border-color:var(--navy);color:var(--navy);}
+.btn-sm.primary{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-sm.primary:hover{background:var(--navy-mid);}
+/* Applicants panel */
+.panel{background:var(--white);border-radius:12px;border:1px solid var(--border);overflow:hidden;margin-bottom:24px;}
+.panel-header{padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.panel-title{font-family:'Rajdhani',sans-serif;font-size:17px;font-weight:700;color:var(--navy);}
+.table{width:100%;border-collapse:collapse;}
+.table th{font-size:11px;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:.1em;padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);background:var(--light);}
+.table td{font-size:13px;color:#2D3142;padding:12px 16px;border-bottom:1px solid var(--border);}
+.table tr:last-child td{border-bottom:none;}
+.table tr:hover td{background:rgba(240,242,245,.5);}
+.cand-name{font-weight:600;color:var(--navy);}
+.cand-email{font-size:12px;color:var(--silver);}
+.score-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700;}
+.score-pass{background:rgba(46,125,94,.1);color:var(--green);}
+.score-fail{background:rgba(224,82,82,.08);color:var(--red);}
+.appl-status{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.st-applied{color:var(--silver);}
+.st-screening{color:var(--gold);}
+.st-declined{color:var(--red);}
+.st-interview{color:var(--accent);}
+.st-complete{color:var(--green);}
+.empty{text-align:center;padding:48px;color:var(--silver);}
+.empty-icon{font-size:36px;margin-bottom:12px;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--silver);cursor:pointer;margin-bottom:24px;border:none;background:transparent;padding:0;}
+.back-btn:hover{color:var(--navy);}
+@media(max-width:768px){.stats-row{grid-template-columns:1fr 1fr;}.jobs-grid{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">NEXT<span>-JENN</span></a>
+  <div class="nav-right">
+    <a href="/setup" class="nav-btn">+ New Job</a>
+  </div>
+</nav>
+
+<div class="main">
+  <div id="loading" style="text-align:center;padding:80px;">
+    <div style="font-size:32px;margin-bottom:12px;">⏳</div>
+    <div style="font-size:16px;color:var(--silver);">Loading dashboard...</div>
+  </div>
+
+  <!-- DASHBOARD VIEW -->
+  <div id="dashboard-view" style="display:none;">
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="dash-company">Dashboard</div>
+        <div class="page-sub" id="dash-sub"></div>
+      </div>
+      <a href="/setup" class="btn-new">+ Create New Job</a>
+    </div>
+
+    <div class="stats-row" id="stats-row"></div>
+
+    <div class="section-title">Active Jobs</div>
+    <div class="jobs-grid" id="jobs-grid"></div>
+  </div>
+
+  <!-- JOB DETAIL VIEW -->
+  <div id="job-view" style="display:none;">
+    <button class="back-btn" onclick="showDashboard()">← Back to Dashboard</button>
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="job-view-title"></div>
+        <div class="page-sub" id="job-view-meta"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn-sm" onclick="copyJobLink()">Copy Apply Link</button>
+        <a id="job-view-send" href="/send" class="btn-sm primary">Send to Candidate</a>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Applicants</div>
+        <div id="applicant-count" style="font-size:13px;color:var(--silver);"></div>
+      </div>
+      <div id="applicants-table-wrap">
+        <table class="table">
+          <thead><tr>
+            <th>Candidate</th>
+            <th>Applied</th>
+            <th>Score</th>
+            <th>Status</th>
+            <th>Interview</th>
+          </tr></thead>
+          <tbody id="applicants-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+var CLIENT_ID = window.location.pathname.split('/').pop();
+var dashData  = null;
+var currentJob = null;
+
+async function init() {
+  try {
+    var r = await fetch('/api/dashboard/' + CLIENT_ID);
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    dashData = d;
+    renderDashboard(d);
+  } catch(e) {
+    document.getElementById('loading').innerHTML = '<div style="font-size:32px;margin-bottom:12px;">❌</div><div style="font-size:16px;color:#888;">Dashboard not found.</div>';
+  }
+}
+
+function renderDashboard(d) {
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('dashboard-view').style.display = 'block';
+
+  var c = d.client || {};
+  document.getElementById('dash-company').textContent = c.company_name || 'Dashboard';
+  document.getElementById('dash-sub').textContent = c.contact_name + ' · ' + c.email;
+
+  var jobs = d.jobs || [];
+  var totalApps = jobs.reduce(function(s,j){ return s + parseInt(j.applicant_count||0); }, 0);
+  var totalComplete = jobs.reduce(function(s,j){ return s + parseInt(j.completed_count||0); }, 0);
+  var activeJobs = jobs.filter(function(j){ return j.status==='active'; }).length;
+
+  document.getElementById('stats-row').innerHTML =
+    statCard(jobs.length, 'Total Jobs') +
+    statCard(activeJobs, 'Active Jobs') +
+    statCard(totalApps, 'Total Applicants') +
+    statCard(totalComplete, 'Interviews Complete');
+
+  var grid = document.getElementById('jobs-grid');
+  if (!jobs.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">📋</div><div>No jobs yet. <a href="/setup" style="color:var(--accent);">Create your first job</a>.</div></div>';
+    return;
+  }
+  grid.innerHTML = jobs.map(function(j) {
+    var badge = j.status === 'active' ? '<span class="status-badge status-active">Active</span>'
+      : j.status === 'paused' ? '<span class="status-badge status-paused">Paused</span>'
+      : '<span class="status-badge status-closed">Closed</span>';
+    return '<div class="job-card" onclick="loadJob(\'' + j.id + '\')">'
+      + '<div class="job-card-header">'
+      + '<div><div class="job-title">' + esc(j.title) + '</div><div class="job-meta">' + esc(j.location||'') + (j.job_type ? ' · ' + j.job_type : '') + '</div></div>'
+      + badge + '</div>'
+      + '<div class="job-stats">'
+      + '<div class="job-stat"><div class="job-stat-num">' + (j.applicant_count||0) + '</div><div class="job-stat-label">Applicants</div></div>'
+      + '<div class="job-stat"><div class="job-stat-num">' + (j.completed_count||0) + '</div><div class="job-stat-label">Interviews</div></div>'
+      + '<div class="job-stat"><div class="job-stat-num">' + fmtDate(j.created_at) + '</div><div class="job-stat-label">Created</div></div>'
+      + '</div>'
+      + '<div class="job-card-footer">'
+      + '<a href="/apply/' + j.id + '" onclick="event.stopPropagation()" class="btn-sm" target="_blank">Apply Link</a>'
+      + '<button class="btn-sm primary" onclick="event.stopPropagation();loadJob(\'' + j.id + '\')">View Applicants</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+function statCard(num, label) {
+  return '<div class="stat-card"><div class="stat-num">' + num + '</div><div class="stat-label">' + label + '</div></div>';
+}
+
+async function loadJob(jobId) {
+  try {
+    var r = await fetch('/api/dashboard/' + CLIENT_ID + '/job/' + jobId);
+    var d = await r.json();
+    if (!r.ok) throw new Error(d.error);
+    currentJob = d.job;
+    document.getElementById('dashboard-view').style.display = 'none';
+    document.getElementById('job-view').style.display = 'block';
+    document.getElementById('job-view-title').textContent = d.job.title;
+    document.getElementById('job-view-meta').textContent = [d.job.location, d.job.job_type].filter(Boolean).join(' · ');
+
+    var applicants = d.applicants || [];
+    document.getElementById('applicant-count').textContent = applicants.length + ' applicant' + (applicants.length !== 1 ? 's' : '');
+
+    var tbody = document.getElementById('applicants-tbody');
+    if (!applicants.length) {
+      tbody.innerHTML = '<tr><td colspan="5"><div class="empty"><div class="empty-icon">👥</div><div>No applicants yet.</div></div></td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = applicants.map(function(a) {
+      var scoreHtml = a.screening_max > 0
+        ? '<span class="score-pill ' + (a.screening_score/a.screening_max >= .7 ? 'score-pass' : 'score-fail') + '">' + a.screening_score + '/' + a.screening_max + '</span>'
+        : '<span style="color:var(--silver);font-size:12px;">—</span>';
+      var statusMap = {
+        applied: '<span class="appl-status st-applied">Applied</span>',
+        screening: '<span class="appl-status st-screening">Screening</span>',
+        declined_min: '<span class="appl-status st-declined">Declined</span>',
+        declined_score: '<span class="appl-status st-declined">Declined</span>',
+        interview_sent: '<span class="appl-status st-interview">Invited</span>',
+        interview_scheduled: '<span class="appl-status st-interview">Scheduled</span>',
+        interview_complete: '<span class="appl-status st-complete">Complete</span>',
+        forwarded: '<span class="appl-status st-complete">Forwarded</span>',
+      };
+      var intHtml = a.status === 'interview_complete' && a.video_urls
+        ? '<span style="font-size:12px;color:var(--green);">✓ Recorded</span>'
+        : '<span style="color:var(--silver);font-size:12px;">—</span>';
+      return '<tr>'
+        + '<td><div class="cand-name">' + esc(a.first_name + ' ' + a.last_name) + '</div><div class="cand-email">' + esc(a.email) + '</div></td>'
+        + '<td>' + fmtDate(a.created_at) + '</td>'
+        + '<td>' + scoreHtml + '</td>'
+        + '<td>' + (statusMap[a.status] || a.status) + '</td>'
+        + '<td>' + intHtml + '</td>'
+        + '</tr>';
+    }).join('');
+  } catch(e) {
+    console.error('Load job error:', e.message);
+  }
+}
+
+function showDashboard() {
+  document.getElementById('job-view').style.display = 'none';
+  document.getElementById('dashboard-view').style.display = 'block';
+  currentJob = null;
+}
+
+function copyJobLink() {
+  if (!currentJob) return;
+  var url = window.location.origin + '/apply/' + currentJob.id;
+  navigator.clipboard.writeText(url).then(function() { alert('Copied: ' + url); });
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('en-US', { month:'short', day:'numeric' });
+}
+
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+init();
+</script>
+</body>
+</html>
