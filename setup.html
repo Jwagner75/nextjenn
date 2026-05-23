@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Create a Job — Next-Jenn</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#1B2A4A;--navy-mid:#243760;--silver:#8892A4;--light:#F0F2F5;--white:#fff;--border:#D8DCE6;--accent:#4A6FA5;--green:#2E7D5E;--gold:#C9963A;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--light);min-height:100vh;color:#2D3142;}
+nav{background:var(--navy);padding:18px 40px;display:flex;align-items:center;justify-content:space-between;}
+.nav-logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:.08em;text-decoration:none;}
+.nav-logo span{color:var(--silver);}
+.nav-tag{font-size:11px;color:var(--silver);letter-spacing:.15em;text-transform:uppercase;}
+.page{max-width:800px;margin:40px auto;padding:0 20px 80px;}
+.page-header{margin-bottom:32px;}
+.page-title{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--navy);margin-bottom:6px;}
+.page-sub{font-size:14px;color:var(--silver);line-height:1.6;}
+/* Progress */
+.progress{display:flex;align-items:center;gap:0;margin-bottom:40px;}
+.prog-step{display:flex;align-items:center;gap:8px;flex:1;}
+.prog-num{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:var(--white);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--silver);flex-shrink:0;transition:all .3s;}
+.prog-num.active{border-color:var(--navy);background:var(--navy);color:#fff;}
+.prog-num.done{border-color:var(--green);background:var(--green);color:#fff;}
+.prog-label{font-size:11px;font-weight:600;color:var(--silver);text-transform:uppercase;letter-spacing:.08em;}
+.prog-label.active{color:var(--navy);}
+.prog-line{flex:1;height:2px;background:var(--border);margin:0 8px;}
+.prog-line.done{background:var(--green);}
+/* Cards */
+.card{background:var(--white);border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(27,42,74,.07);border:1px solid var(--border);margin-bottom:20px;display:none;}
+.card.active{display:block;}
+.card-title{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.card-sub{font-size:13px;color:var(--silver);margin-bottom:24px;line-height:1.6;}
+/* Fields */
+.field{margin-bottom:18px;}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;}
+.field-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:18px;}
+label{display:block;font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;}
+.opt-label{font-weight:400;text-transform:none;letter-spacing:0;color:var(--silver);}
+input[type=text],input[type=email],input[type=tel],input[type=url],select,textarea{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:8px;font-size:14px;font-family:'DM Sans',sans-serif;color:#2D3142;outline:none;transition:border-color .2s;background:var(--white);}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(74,111,165,.1);}
+input::placeholder,textarea::placeholder{color:#B0B7C3;}
+textarea{resize:vertical;min-height:100px;}
+/* Format selector */
+.format-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:8px;}
+.format-opt{border:2px solid var(--border);border-radius:12px;padding:20px 16px;cursor:pointer;transition:all .2s;text-align:center;position:relative;}
+.format-opt:hover{border-color:var(--accent);}
+.format-opt.selected{border-color:var(--navy);background:rgba(27,42,74,.04);}
+.format-opt input{display:none;}
+.format-icon{font-size:28px;margin-bottom:8px;}
+.format-title{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px;}
+.format-desc{font-size:12px;color:var(--silver);line-height:1.5;}
+.format-badge{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:20px;white-space:nowrap;}
+/* Questions */
+.questions-list{display:flex;flex-direction:column;gap:12px;margin-bottom:16px;}
+.question-item{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:flex-start;gap:12px;}
+.q-drag{color:var(--silver);font-size:16px;cursor:grab;padding-top:2px;flex-shrink:0;}
+.q-num{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:var(--navy);min-width:24px;padding-top:1px;}
+.q-text{flex:1;font-size:14px;color:#2D3142;line-height:1.5;}
+.q-delete{color:var(--silver);cursor:pointer;font-size:18px;padding:0 4px;transition:color .2s;flex-shrink:0;}
+.q-delete:hover{color:#E05252;}
+.btn-add-q{width:100%;padding:12px;background:transparent;border:1.5px dashed var(--border);border-radius:8px;font-size:13px;color:var(--silver);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-add-q:hover{border-color:var(--accent);color:var(--accent);}
+.ai-btn{padding:10px 18px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:8px;transition:all .2s;margin-bottom:16px;}
+.ai-btn:hover{background:var(--navy-mid);}
+.ai-btn:disabled{background:var(--silver);cursor:not-allowed;}
+.ai-loading{display:none;align-items:center;gap:8px;font-size:13px;color:var(--silver);margin-bottom:12px;}
+.ai-spin{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--navy);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* Screening questions */
+.screening-list{display:flex;flex-direction:column;gap:16px;margin-bottom:16px;}
+.screening-item{background:var(--light);border:1px solid var(--border);border-radius:10px;padding:16px;}
+.screening-item-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.screening-q-num{font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;color:var(--navy);}
+.screening-delete{color:var(--silver);cursor:pointer;font-size:16px;transition:color .2s;}
+.screening-delete:hover{color:#E05252;}
+.type-toggle{display:flex;gap:8px;margin-bottom:10px;}
+.type-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;transition:all .2s;background:var(--white);color:var(--silver);}
+.type-btn.active{border-color:var(--navy);background:var(--navy);color:#fff;}
+.pass-fail-row{display:flex;gap:8px;align-items:center;margin-top:8px;}
+.pass-fail-label{font-size:12px;color:var(--silver);flex-shrink:0;}
+.pass-val{padding:6px 12px;border:1px solid var(--border);border-radius:6px;font-size:12px;cursor:pointer;background:var(--white);color:var(--silver);transition:all .2s;}
+.pass-val.selected-yes{border-color:var(--green);background:rgba(46,125,94,.1);color:var(--green);}
+.pass-val.selected-no{border-color:#E05252;background:rgba(224,82,82,.08);color:#E05252;}
+/* Buttons */
+.btn-nav{display:flex;gap:12px;margin-top:8px;}
+.btn{padding:14px 28px;background:var(--navy);color:#fff;border:none;border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.btn:hover{background:var(--navy-mid);transform:translateY(-1px);}
+.btn:disabled{background:var(--silver);cursor:not-allowed;transform:none;}
+.btn-back{padding:13px 24px;background:transparent;color:var(--silver);border:1.5px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;transition:all .2s;}
+.btn-back:hover{border-color:var(--silver);color:var(--navy);}
+.btn-full{width:100%;}
+.err{background:#FFF0F0;border:1px solid #FFB3B3;border-radius:8px;padding:12px 16px;font-size:13px;color:#C0392B;margin-top:12px;display:none;}
+/* Success */
+.success-wrap{text-align:center;padding:60px 20px;display:none;}
+.success-icon{font-size:64px;margin-bottom:20px;}
+.success-title{font-family:'Rajdhani',sans-serif;font-size:32px;font-weight:700;color:var(--navy);margin-bottom:8px;}
+.success-sub{font-size:15px;color:var(--silver);line-height:1.7;margin-bottom:32px;}
+.link-box{background:var(--light);border:1.5px solid var(--border);border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:12px;margin-bottom:12px;text-align:left;}
+.link-box-label{font-size:11px;font-weight:600;color:var(--silver);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;}
+.link-box-url{font-size:13px;color:var(--accent);word-break:break-all;font-family:monospace;}
+.copy-btn{flex-shrink:0;padding:8px 14px;background:var(--navy);color:#fff;border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:background .2s;}
+.copy-btn:hover{background:var(--navy-mid);}
+.success-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:24px;}
+.btn-outline{padding:12px 24px;background:transparent;color:var(--navy);border:1.5px solid var(--navy);border-radius:10px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;text-decoration:none;display:inline-block;transition:all .2s;}
+.btn-outline:hover{background:var(--navy);color:#fff;}
+@media(max-width:640px){.field-row,.field-row-3{grid-template-columns:1fr;}.format-grid{grid-template-columns:1fr;}.btn-nav{flex-direction:column;}}
+</style>
+</head>
+<body>
+<nav>
+  <a href="/" class="nav-logo">NEXT<span>-JENN</span></a>
+  <span class="nav-tag">AI Recruiter Interview</span>
+</nav>
+
+<div class="page">
+  <div class="page-header">
+    <h1 class="page-title">Create an Interview</h1>
+    <p class="page-sub">Set up your job, screening questions, and interview format. Next-Jenn handles the rest.</p>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress">
+    <div class="prog-step"><div class="prog-num active" id="pn1">1</div><div class="prog-label active" id="pl1">Company</div></div>
+    <div class="prog-line" id="pline1"></div>
+    <div class="prog-step"><div class="prog-num" id="pn2">2</div><div class="prog-label" id="pl2">Job Details</div></div>
+    <div class="prog-line" id="pline2"></div>
+    <div class="prog-step"><div class="prog-num" id="pn3">3</div><div class="prog-label" id="pl3">Screening</div></div>
+    <div class="prog-line" id="pline3"></div>
+    <div class="prog-step"><div class="prog-num" id="pn4">4</div><div class="prog-label" id="pl4">Interview</div></div>
+    <div class="prog-line" id="pline4"></div>
+    <div class="prog-step"><div class="prog-num" id="pn5">5</div><div class="prog-label" id="pl5">Review</div></div>
+  </div>
+
+  <!-- STEP 1: COMPANY -->
+  <div class="card active" id="step1">
+    <div class="card-title">Company & Contact Information</div>
+    <p class="card-sub">Your information so we know where to send interview transcripts.</p>
+    <div class="field-row">
+      <div class="field"><label>Company Name</label><input type="text" id="s1-company" placeholder="Acme Corporation" /></div>
+      <div class="field"><label>Your Name</label><input type="text" id="s1-name" placeholder="Jennifer Wagner" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Your Email</label><input type="email" id="s1-email" placeholder="you@company.com" /></div>
+      <div class="field"><label>Phone <span class="opt-label">(optional)</span></label><input type="tel" id="s1-phone" placeholder="(555) 555-5555" /></div>
+    </div>
+    <div class="btn-nav">
+      <button class="btn" onclick="goStep(2)">Continue →</button>
+    </div>
+    <div class="err" id="err1"></div>
+  </div>
+
+  <!-- STEP 2: JOB DETAILS -->
+  <div class="card" id="step2">
+    <div class="card-title">Job Details</div>
+    <p class="card-sub">Tell us about the role. This information will be shared with candidates.</p>
+    <div class="field-row">
+      <div class="field"><label>Job Title</label><input type="text" id="s2-title" placeholder="Marketing Manager" /></div>
+      <div class="field"><label>Department <span class="opt-label">(optional)</span></label><input type="text" id="s2-dept" placeholder="Marketing" /></div>
+    </div>
+    <div class="field-row">
+      <div class="field"><label>Location</label><input type="text" id="s2-location" placeholder="Chicago, IL / Remote" /></div>
+      <div class="field"><label>Job Type</label>
+        <select id="s2-type"><option>Full-Time</option><option>Part-Time</option><option>Contract</option><option>Temporary</option><option>Internship</option></select>
+      </div>
+    </div>
+    <div class="field"><label>Salary Range <span class="opt-label">(optional)</span></label><input type="text" id="s2-salary" placeholder="$60,000 – $80,000" /></div>
+    <div class="field"><label>Job Description</label><textarea id="s2-desc" placeholder="Describe the role, responsibilities, and what makes it a great opportunity..."></textarea></div>
+    <div class="field"><label>Minimum Qualifications <span class="opt-label">(candidates who don't meet these are auto-declined)</span></label><textarea id="s2-minqual" placeholder="e.g. 3+ years marketing experience, Bachelor's degree required, must be authorized to work in the US..." style="min-height:80px;"></textarea></div>
+    <div class="field"><label>Preferred Qualifications <span class="opt-label">(optional)</span></label><textarea id="s2-prefqual" placeholder="e.g. Experience with HubSpot, MBA preferred..." style="min-height:80px;"></textarea></div>
+    <div class="field">
+      <label>Make this job publicly listed?</label>
+      <div style="display:flex;gap:12px;margin-top:4px;">
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer;"><input type="radio" name="public" value="true" id="public-yes"> Yes — post publicly on Next-Jenn</label>
+        <label style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0;font-size:14px;cursor:pointer;"><input type="radio" name="public" value="false" id="public-no" checked> No — send link manually</label>
+      </div>
+    </div>
+    <div class="btn-nav">
+      <button class="btn-back" onclick="goStep(1)">← Back</button>
+      <button class="btn" onclick="goStep(3)">Continue →</button>
+    </div>
+    <div class="err" id="err2"></div>
+  </div>
+
+  <!-- STEP 3: SCREENING QUESTIONS -->
+  <div class="card" id="step3">
+    <div class="card-title">Screening Questions</div>
+    <p class="card-sub">Candidates answer these before their interview. Those scoring 7/10 or higher advance to the interview. AI can suggest questions from your job description.</p>
+
+    <button class="ai-btn" id="ai-screen-btn" onclick="generateScreeningQuestions()">
+      ✦ Generate with AI from Job Description
+    </button>
+    <div class="ai-loading" id="ai-screen-loading">
+      <div class="ai-spin"></div> Generating screening questions...
+    </div>
+
+    <div class="screening-list" id="screening-list"></div>
+    <button class="btn-add-q" onclick="addScreeningQuestion()">+ Add Question</button>
+
+    <div class="btn-nav" style="margin-top:20px;">
+      <button class="btn-back" onclick="goStep(2)">← Back</button>
+      <button class="btn" onclick="goStep(4)">Continue →</button>
+    </div>
+    <div class="err" id="err3"></div>
+  </div>
+
+  <!-- STEP 4: INTERVIEW FORMAT -->
+  <div class="card" id="step4">
+    <div class="card-title">Interview Format</div>
+    <p class="card-sub">Choose how Jenn will conduct the interview. Video uses Jenn's pre-recorded questions. Audio and text let you set custom questions.</p>
+
+    <div class="format-grid">
+      <div class="format-opt selected" id="fmt-video" onclick="selectFormat('video')">
+        <div class="format-badge">Default</div>
+        <input type="radio" name="format" value="video" checked>
+        <div class="format-icon">🎥</div>
+        <div class="format-title">Video</div>
+        <div class="format-desc">Jenn appears on screen and asks 5 pre-recorded questions. Candidate responds on camera.</div>
+      </div>
+      <div class="format-opt" id="fmt-audio" onclick="selectFormat('audio')">
+        <input type="radio" name="format" value="audio">
+        <div class="format-icon">🎙️</div>
+        <div class="format-title">Audio Only</div>
+        <div class="format-desc">Voice-only interview. No camera required. You set the questions.</div>
+      </div>
+      <div class="format-opt" id="fmt-text" onclick="selectFormat('text')">
+        <input type="radio" name="format" value="text">
+        <div class="format-icon">✍️</div>
+        <div class="format-title">Written</div>
+        <div class="format-desc">Candidates type their responses. Best for writing roles or accessibility needs. You set the questions.</div>
+      </div>
+    </div>
+
+    <!-- Custom questions — shown for audio and text only -->
+    <div id="custom-questions-section" style="display:none;margin-top:28px;">
+      <div style="border-top:1px solid var(--border);padding-top:24px;">
+        <div class="card-title" style="font-size:17px;margin-bottom:4px;">Interview Questions</div>
+        <p class="card-sub">Set up to 10 questions. AI can suggest them from your job description.</p>
+
+        <button class="ai-btn" id="ai-iq-btn" onclick="generateInterviewQuestions()">
+          ✦ Generate with AI from Job Description
+        </button>
+        <div class="ai-loading" id="ai-iq-loading">
+          <div class="ai-spin"></div> Generating interview questions...
+        </div>
+
+        <div class="questions-list" id="interview-questions-list"></div>
+        <button class="btn-add-q" onclick="addInterviewQuestion()">+ Add Question</button>
+      </div>
+    </div>
+
+    <div class="btn-nav" style="margin-top:24px;">
+      <button class="btn-back" onclick="goStep(3)">← Back</button>
+      <button class="btn" onclick="goStep(5)">Review →</button>
+    </div>
+    <div class="err" id="err4"></div>
+  </div>
+
+  <!-- STEP 5: REVIEW -->
+  <div class="card" id="step5">
+    <div class="card-title">Review & Create</div>
+    <p class="card-sub">Review your job setup before creating. Once created, candidates can be sent the application link.</p>
+    <div id="review-content" style="margin-bottom:24px;"></div>
+    <div class="btn-nav">
+      <button class="btn-back" onclick="goStep(4)">← Back</button>
+      <button class="btn btn-full" id="create-btn" onclick="createJob()">Create Job & Get Links →</button>
+    </div>
+    <div class="err" id="err5"></div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-wrap" id="success-wrap">
+    <div class="success-icon">🎉</div>
+    <div class="success-title">Job Created!</div>
+    <p class="success-sub">Your job is live. Share the application link with candidates or post the public job link.</p>
+    <div class="link-box" id="apply-link-box">
+      <div style="flex:1"><div class="link-box-label">Candidate Application Link</div><div class="link-box-url" id="apply-link-url"></div></div>
+      <button class="copy-btn" onclick="copyLink('apply')">Copy</button>
+    </div>
+    <div class="link-box" id="public-link-box" style="display:none;">
+      <div style="flex:1"><div class="link-box-label">Public Job Posting</div><div class="link-box-url" id="public-link-url"></div></div>
+      <button class="copy-btn" onclick="copyLink('public')">Copy</button>
+    </div>
+    <div class="link-box">
+      <div style="flex:1"><div class="link-box-label">Your Dashboard</div><div class="link-box-url" id="dashboard-url"></div></div>
+      <button class="copy-btn" onclick="copyLink('dashboard')">Copy</button>
+    </div>
+    <div class="success-actions">
+      <a href="#" id="view-dashboard-btn" class="btn-outline">View Dashboard</a>
+      <button class="btn" onclick="createAnother()">Create Another Job</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var APP = window.location.origin;
+var currentStep = 1;
+var selectedFormat = 'video';
+var screeningQuestions = [];
+var interviewQuestions = [];
+var createdJobId = null;
+var createdClientId = null;
+
+// ── STEP NAVIGATION
+function goStep(n) {
+  if (n > currentStep && !validateStep(currentStep)) return;
+  setStep(n);
+}
+
+function setStep(n) {
+  for (var i = 1; i <= 5; i++) {
+    document.getElementById('step' + i).classList.toggle('active', i === n);
+    var pn = document.getElementById('pn' + i);
+    var pl = document.getElementById('pl' + i);
+    if (i < n)      { pn.className = 'prog-num done'; pn.textContent = '✓'; pl.className = 'prog-label'; }
+    else if (i === n){ pn.className = 'prog-num active'; pn.textContent = i; pl.className = 'prog-label active'; }
+    else             { pn.className = 'prog-num'; pn.textContent = i; pl.className = 'prog-label'; }
+    if (i < 5) document.getElementById('pline' + i).className = 'prog-line' + (i < n ? ' done' : '');
+  }
+  currentStep = n;
+  if (n === 5) buildReview();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function validateStep(n) {
+  hideErr(n);
+  if (n === 1) {
+    if (!v('s1-company') || !v('s1-name') || !v('s1-email')) { showErr(1, 'Please fill in company name, your name, and email.'); return false; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v('s1-email'))) { showErr(1, 'Please enter a valid email address.'); return false; }
+  }
+  if (n === 2) {
+    if (!v('s2-title') || !v('s2-desc') || !v('s2-minqual')) { showErr(2, 'Please fill in job title, description, and minimum qualifications.'); return false; }
+  }
+  if (n === 3) {
+    if (screeningQuestions.length === 0) { showErr(3, 'Please add at least 1 screening question.'); return false; }
+  }
+  if (n === 4) {
+    if (selectedFormat !== 'video' && interviewQuestions.length === 0) { showErr(4, 'Please add at least 1 interview question.'); return false; }
+  }
+  return true;
+}
+
+function v(id) { return document.getElementById(id).value.trim(); }
+function showErr(n, msg) { var e = document.getElementById('err' + n); e.textContent = msg; e.style.display = 'block'; }
+function hideErr(n) { document.getElementById('err' + n).style.display = 'none'; }
+
+// ── FORMAT SELECTION
+function selectFormat(fmt) {
+  selectedFormat = fmt;
+  ['video','audio','text'].forEach(function(f) {
+    document.getElementById('fmt-' + f).classList.toggle('selected', f === fmt);
+  });
+  var custom = document.getElementById('custom-questions-section');
+  custom.style.display = (fmt !== 'video') ? 'block' : 'none';
+}
+
+// ── SCREENING QUESTIONS
+function renderScreening() {
+  var list = document.getElementById('screening-list');
+  if (screeningQuestions.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = screeningQuestions.map(function(q, i) {
+    return '<div class="screening-item" id="sq-' + i + '">'
+      + '<div class="screening-item-header">'
+      + '<span class="screening-q-num">Q' + (i+1) + '</span>'
+      + '<span class="screening-delete" onclick="deleteScreeningQ(' + i + ')">×</span>'
+      + '</div>'
+      + '<input type="text" value="' + escHtml(q.question) + '" onchange="screeningQuestions[' + i + '].question=this.value" placeholder="Enter screening question..." style="margin-bottom:10px;">'
+      + '<div class="pass-fail-row">'
+      + '<span class="pass-fail-label">Pass answer:</span>'
+      + '<button class="pass-val' + (q.correct==='yes'?' selected-yes':'') + '" onclick="setCorrect(' + i + ',\'yes\')">Yes</button>'
+      + '<button class="pass-val' + (q.correct==='no'?' selected-no':'') + '" onclick="setCorrect(' + i + ',\'no\')">No</button>'
+      + '<span class="pass-fail-label" style="margin-left:12px;">Points:</span>'
+      + '<input type="number" min="1" max="5" value="' + q.points + '" onchange="screeningQuestions[' + i + '].points=parseInt(this.value)||1" style="width:60px;padding:5px 8px;">'
+      + '</div></div>';
+  }).join('');
+}
+
+function addScreeningQuestion() {
+  screeningQuestions.push({ question: '', correct: 'yes', points: 1 });
+  renderScreening();
+  // Focus the new input
+  setTimeout(function() {
+    var inputs = document.querySelectorAll('#screening-list input[type=text]');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+function deleteScreeningQ(i) { screeningQuestions.splice(i, 1); renderScreening(); }
+function setCorrect(i, val) { screeningQuestions[i].correct = val; renderScreening(); }
+
+async function generateScreeningQuestions() {
+  var desc = v('s2-desc');
+  var minq = v('s2-minqual');
+  var title = v('s2-title');
+  if (!desc && !minq) { showErr(3, 'Please fill in the job description first (Step 2).'); return; }
+  var btn = document.getElementById('ai-screen-btn');
+  var loading = document.getElementById('ai-screen-loading');
+  btn.disabled = true; loading.style.display = 'flex';
+  try {
+    var resp = await fetch('/api/ai/screening-questions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_title: title, job_description: desc, min_qualifications: minq })
+    });
+    var data = await resp.json();
+    if (data.questions && data.questions.length) {
+      screeningQuestions = data.questions;
+      renderScreening();
+    }
+  } catch(e) { showErr(3, 'AI generation failed. Please add questions manually.'); }
+  finally { btn.disabled = false; loading.style.display = 'none'; }
+}
+
+// ── INTERVIEW QUESTIONS
+function renderInterviewQuestions() {
+  var list = document.getElementById('interview-questions-list');
+  if (interviewQuestions.length === 0) { list.innerHTML = ''; return; }
+  list.innerHTML = interviewQuestions.map(function(q, i) {
+    return '<div class="question-item">'
+      + '<span class="q-drag">⠿</span>'
+      + '<span class="q-num">Q' + (i+1) + '</span>'
+      + '<input type="text" value="' + escHtml(q) + '" onchange="interviewQuestions[' + i + ']=this.value" placeholder="Enter interview question..." style="flex:1;margin:0;">'
+      + '<span class="q-delete" onclick="deleteInterviewQ(' + i + ')">×</span>'
+      + '</div>';
+  }).join('');
+}
+
+function addInterviewQuestion() {
+  if (interviewQuestions.length >= 10) return;
+  interviewQuestions.push('');
+  renderInterviewQuestions();
+  setTimeout(function() {
+    var inputs = document.querySelectorAll('#interview-questions-list input[type=text]');
+    if (inputs.length) inputs[inputs.length-1].focus();
+  }, 50);
+}
+
+function deleteInterviewQ(i) { interviewQuestions.splice(i, 1); renderInterviewQuestions(); }
+
+async function generateInterviewQuestions() {
+  var desc = v('s2-desc');
+  var title = v('s2-title');
+  var fmt = selectedFormat;
+  if (!desc) { showErr(4, 'Please fill in the job description first (Step 2).'); return; }
+  var btn = document.getElementById('ai-iq-btn');
+  var loading = document.getElementById('ai-iq-loading');
+  btn.disabled = true; loading.style.display = 'flex';
+  try {
+    var resp = await fetch('/api/ai/interview-questions', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job_title: title, job_description: desc, format: fmt })
+    });
+    var data = await resp.json();
+    if (data.questions && data.questions.length) {
+      interviewQuestions = data.questions;
+      renderInterviewQuestions();
+    }
+  } catch(e) { showErr(4, 'AI generation failed. Please add questions manually.'); }
+  finally { btn.disabled = false; loading.style.display = 'none'; }
+}
+
+// ── REVIEW
+function buildReview() {
+  var totalPoints = screeningQuestions.reduce(function(s, q) { return s + (q.points||1); }, 0);
+  var passingScore = Math.ceil(totalPoints * 0.7);
+  var html = '<div style="display:flex;flex-direction:column;gap:16px;">';
+
+  html += reviewRow('Company', v('s1-company') + ' — ' + v('s1-name'));
+  html += reviewRow('Transcript Email', v('s1-email'));
+  html += reviewRow('Job Title', v('s2-title') + (v('s2-dept') ? ' — ' + v('s2-dept') : ''));
+  html += reviewRow('Location / Type', v('s2-location') + ' · ' + v('s2-type'));
+  html += reviewRow('Screening Questions', screeningQuestions.length + ' questions — passing score: ' + passingScore + '/' + totalPoints + ' (' + Math.round(passingScore/totalPoints*100) + '%)');
+  html += reviewRow('Interview Format', selectedFormat === 'video' ? '🎥 Video — Jenn\'s 5 pre-recorded questions' : selectedFormat === 'audio' ? '🎙️ Audio only — ' + interviewQuestions.length + ' custom questions' : '✍️ Written — ' + interviewQuestions.length + ' custom questions');
+  html += reviewRow('Public Job Posting', document.getElementById('public-yes').checked ? 'Yes — will be listed publicly' : 'No — send link manually');
+  html += '</div>';
+  document.getElementById('review-content').innerHTML = html;
+}
+
+function reviewRow(label, value) {
+  return '<div style="display:flex;gap:16px;padding:12px 16px;background:var(--light);border-radius:8px;border:1px solid var(--border);">'
+    + '<div style="font-size:12px;font-weight:600;color:var(--silver);text-transform:uppercase;letter-spacing:.08em;min-width:160px;padding-top:1px;">' + label + '</div>'
+    + '<div style="font-size:14px;color:#2D3142;">' + value + '</div>'
+    + '</div>';
+}
+
+// ── CREATE JOB
+async function createJob() {
+  var btn = document.getElementById('create-btn');
+  btn.disabled = true; btn.textContent = 'Creating...';
+  hideErr(5);
+  try {
+    var resp = await fetch('/api/jobs/create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        company_name:       v('s1-company'),
+        contact_name:       v('s1-name'),
+        email:              v('s1-email'),
+        phone:              v('s1-phone'),
+        title:              v('s2-title'),
+        department:         v('s2-dept'),
+        location:           v('s2-location'),
+        job_type:           v('s2-type'),
+        salary_range:       v('s2-salary'),
+        description:        v('s2-desc'),
+        min_qualifications: v('s2-minqual'),
+        preferred_quals:    v('s2-prefqual'),
+        is_public:          document.getElementById('public-yes').checked,
+        interview_format:   selectedFormat,
+        screening_questions: screeningQuestions,
+        interview_questions: interviewQuestions,
+      })
+    });
+    var data = await resp.json();
+    if (!resp.ok) throw new Error(data.error || 'Failed to create job');
+    createdJobId = data.job_id;
+    createdClientId = data.client_id;
+    document.getElementById('apply-link-url').textContent = APP + '/apply/' + data.job_id;
+    document.getElementById('dashboard-url').textContent  = APP + '/dashboard/' + data.client_id;
+    document.getElementById('view-dashboard-btn').href    = APP + '/dashboard/' + data.client_id;
+    if (document.getElementById('public-yes').checked) {
+      document.getElementById('public-link-box').style.display = 'flex';
+      document.getElementById('public-link-url').textContent = APP + '/jobs/' + data.job_id;
+    }
+    document.getElementById('step5').style.display  = 'none';
+    document.getElementById('success-wrap').style.display = 'block';
+  } catch(e) {
+    showErr(5, 'Something went wrong: ' + e.message);
+    btn.disabled = false; btn.textContent = 'Create Job & Get Links →';
+  }
+}
+
+function copyLink(type) {
+  var urls = { apply: 'apply-link-url', public: 'public-link-url', dashboard: 'dashboard-url' };
+  var text = document.getElementById(urls[type]).textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btns = document.querySelectorAll('.copy-btn');
+    btns.forEach(function(b) { if (b.onclick && b.onclick.toString().includes(type)) { b.textContent = 'Copied!'; setTimeout(function(){b.textContent='Copy';},2000); }});
+  });
+}
+
+function createAnother() { window.location.reload(); }
+
+function escHtml(s) { return (s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+</script>
+</body>
+</html>
