@@ -31,7 +31,7 @@ var mailer = nodemailer.createTransport({
   auth: { user: process.env.EMAIL_USER, pass: process.env.EMAIL_PASSWORD },
 });
 
-var anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+var anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY }) : null;
 
 var upload = multer({
   storage: multer.memoryStorage(),
@@ -98,6 +98,7 @@ function btnHtml(url, label) {
 
 // Generate screening questions from job description
 app.post('/api/ai/screening-questions', async function(req, res) {
+  if (!anthropic) return res.status(500).json({ error: 'AI not configured — add ANTHROPIC_API_KEY to environment' });
   try {
     var { job_title, job_description, min_qualifications } = req.body;
     var prompt = 'You are an expert recruiter with 20+ years of experience. Generate 8 yes/no screening questions for this job.\n\n'
@@ -110,7 +111,7 @@ app.post('/api/ai/screening-questions', async function(req, res) {
       + 'Make questions specific to the role. Points should be 1 for standard, 2 for critical requirements.';
 
     var msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 1000,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -125,6 +126,7 @@ app.post('/api/ai/screening-questions', async function(req, res) {
 
 // Generate interview questions from job description
 app.post('/api/ai/interview-questions', async function(req, res) {
+  if (!anthropic) return res.status(500).json({ error: 'AI not configured — add ANTHROPIC_API_KEY to environment' });
   try {
     var { job_title, job_description, format } = req.body;
     var formatNote = format === 'audio' ? 'voice interview (questions will be read aloud)' : 'written interview (candidates type responses)';
@@ -136,7 +138,7 @@ app.post('/api/ai/interview-questions', async function(req, res) {
       + 'Questions should be open-ended, behavioral where possible, and specific to this role.';
 
     var msg = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-5',
       max_tokens: 800,
       messages: [{ role: 'user', content: prompt }],
     });
@@ -203,7 +205,7 @@ app.post('/api/jobs/create', async function(req, res) {
     console.log('Job created:', jobId, 'for client:', clientId);
     res.json({ success: true, job_id: jobId, client_id: clientId });
   } catch(e) {
-    console.error('Create job error:', e.message);
+    console.error('Create job error:', e.message, e.stack);
     res.status(500).json({ error: e.message });
   }
 });
@@ -582,7 +584,7 @@ async function sendTranscript(sessionId) {
     for (var segId in session.videos) {
       try {
         var msg = await anthropic.messages.create({
-          model: 'claude-sonnet-4-20250514',
+          model: 'claude-sonnet-4-5',
           max_tokens: 500,
           messages: [{ role: 'user', content: 'The candidate recorded a video interview response. The video URL is: ' + session.videos[segId] + '. Based on this being a job interview response, write "[Video response — click Watch Response to view]" as the transcription placeholder. Do not attempt to access the URL.' }]
         });
