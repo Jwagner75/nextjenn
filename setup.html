@@ -210,25 +210,38 @@ textarea{resize:vertical;min-height:100px;}
     <div class="card-title">Interview Format</div>
     <p class="card-sub">Choose how Jenn will conduct the interview. Video uses Jenn's pre-recorded questions. Audio and text let you set custom questions.</p>
 
-    <div class="format-grid">
+    <!-- Format info banner -->
+    <div style="background:#EEF1F7;border:1px solid var(--border);border-radius:10px;padding:16px 20px;margin-bottom:20px;font-size:13px;color:#555B6E;line-height:1.6;">
+      <strong style="color:var(--navy);">Choose your interview format first.</strong> Video uses Jenn's pre-recorded questions — no setup needed. Audio lets you set custom questions and has no video storage cost.
+    </div>
+
+    <div class="format-grid" style="grid-template-columns:1fr 1fr;">
       <div class="format-opt selected" id="fmt-video" onclick="selectFormat('video')">
-        <div class="format-badge">Default</div>
+        <div class="format-badge">Recommended</div>
         <input type="radio" name="format" value="video" checked>
         <div class="format-icon">🎥</div>
-        <div class="format-title">Video</div>
-        <div class="format-desc">Jenn appears on screen and asks 5 pre-recorded questions. Candidate responds on camera.</div>
+        <div class="format-title">Video Interview</div>
+        <div class="format-desc" style="text-align:left;">
+          <p style="margin-bottom:8px;">Jenn appears on screen and conducts a two-way video interview using 5 pre-recorded questions. No setup required — questions are already built in.</p>
+          <p style="margin-bottom:6px;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;">Advantages</p>
+          <p style="margin-bottom:8px;">Most engaging for candidates · Jenn's professional presence · No questions to write · Best for client-facing and leadership roles</p>
+          <p style="margin-bottom:6px;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;">Considerations</p>
+          <p style="margin-bottom:8px;">Requires candidate camera · Video storage applies · Higher tier pricing</p>
+          <div style="background:rgba(27,42,74,.06);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--navy);font-weight:600;">💡 Best for: Sales, management, customer-facing, and client-interfacing roles</div>
+        </div>
       </div>
       <div class="format-opt" id="fmt-audio" onclick="selectFormat('audio')">
         <input type="radio" name="format" value="audio">
         <div class="format-icon">🎙️</div>
         <div class="format-title">Audio Only</div>
-        <div class="format-desc">Voice-only interview. No camera required. You set the questions.</div>
-      </div>
-      <div class="format-opt" id="fmt-text" onclick="selectFormat('text')">
-        <input type="radio" name="format" value="text">
-        <div class="format-icon">✍️</div>
-        <div class="format-title">Written</div>
-        <div class="format-desc">Candidates type their responses. Best for writing roles or accessibility needs. You set the questions.</div>
+        <div class="format-desc" style="text-align:left;">
+          <p style="margin-bottom:8px;">Voice-only interview — no camera required. You set up to 10 custom questions tailored to the role. AI can suggest questions from your job description.</p>
+          <p style="margin-bottom:6px;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;">Advantages</p>
+          <p style="margin-bottom:8px;">No camera needed · Lower cost · Custom questions · Accessible to all candidates · No video storage</p>
+          <p style="margin-bottom:6px;font-size:11px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.08em;">Considerations</p>
+          <p style="margin-bottom:8px;">Requires question setup · Audio only — no visual of candidate</p>
+          <div style="background:rgba(27,42,74,.06);border-radius:6px;padding:8px 12px;font-size:12px;color:var(--navy);font-weight:600;">💡 Best for: Technical, remote, administrative, and back-office roles</div>
+        </div>
       </div>
     </div>
 
@@ -348,8 +361,9 @@ function hideErr(n) { document.getElementById('err' + n).style.display = 'none';
 // ── FORMAT SELECTION
 function selectFormat(fmt) {
   selectedFormat = fmt;
-  ['video','audio','text'].forEach(function(f) {
-    document.getElementById('fmt-' + f).classList.toggle('selected', f === fmt);
+  ['video','audio'].forEach(function(f) {
+    var el = document.getElementById('fmt-' + f);
+    if (el) el.classList.toggle('selected', f === fmt);
   });
   var custom = document.getElementById('custom-questions-section');
   custom.style.display = (fmt !== 'video') ? 'block' : 'none';
