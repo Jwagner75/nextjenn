@@ -719,7 +719,7 @@
       <div class="panel-sub">Speak clearly. Take your time up to the limit shown.</div>
 
       <div class="perm-alert" id="perm-alert">
-        ⚠ Please allow camera and microphone access to record your response.
+        ⚠ Please allow <span id="perm-text">camera and microphone</span> access to record your response.
       </div>
 
       <div class="timer-wrap">
@@ -811,7 +811,14 @@ const CAND_NAME     = urlParams.get('name')    || '{{CAND_NAME}}';
 const CLIENT_EMAIL  = urlParams.get('client')  || '{{CLIENT_EMAIL}}';
 const COMPANY_NAME        = urlParams.get('company') || '';
 const HIRING_MANAGER_NAME = urlParams.get('manager') || '';
-const CAND_EMAIL          = urlParams.get('cemail')  || '';
+const CAND_EMAIL          = urlParams.get('cemail')      || '';
+const APP_PHONE           = urlParams.get('phone')       || '';
+const APP_LOCATION        = urlParams.get('location')    || '';
+const APP_LINKEDIN        = urlParams.get('linkedin')    || '';
+const APP_AUTHORIZED      = urlParams.get('authorized')  || '';
+const APP_SPONSORSHIP     = urlParams.get('sponsorship') || '';
+const INTERVIEW_FORMAT    = urlParams.get('format')      || 'video';
+const JOB_ID              = urlParams.get('jobid')       || '';
 
 // Track video URLs as candidate records each response
 const responseVideos = {};
@@ -904,10 +911,65 @@ setInterval(() => {
 // ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('info-role').textContent = JOB_TITLE || 'Open Role';
-  buildTrack();
-  // Show start button first so browser allows video autoplay after user interaction
-  showStartScreen();
+
+  // If audio format, hide video elements immediately
+  if (INTERVIEW_FORMAT === 'audio') {
+    var permText = document.getElementById('perm-text');
+    if (permText) permText.textContent = 'microphone';
+    document.getElementById('jenn-video').style.display = 'none';
+    document.getElementById('pip-wrap').style.display = 'none';
+    // Add audio indicator without destroying overlay
+    var audioIndicator = document.createElement('div');
+    audioIndicator.style.cssText = 'position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;color:#fff;z-index:1;pointer-events:none;';
+    audioIndicator.innerHTML = '<div style="font-size:56px;margin-bottom:12px;">🎙️</div>'
+      + '<div style="font-family:Rajdhani,sans-serif;font-size:22px;font-weight:700;letter-spacing:.08em;">AUDIO INTERVIEW</div>'
+      + '<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:6px;">Microphone only — no camera required</div>';
+    var jennWrap = document.querySelector('.jenn-wrap');
+    jennWrap.style.background = '#1B2A4A';
+    jennWrap.style.position = 'relative';
+    jennWrap.appendChild(audioIndicator);
+    await loadAudioInterview();
+  } else {
+    buildTrack();
+    showStartScreen();
+  }
 });
+
+// ── AUDIO INTERVIEW MODE
+async function loadAudioInterview() {
+  try {
+    var jobId = JOB_ID || urlParams.get('jobid');
+    if (!jobId) { buildTrack(); showStartScreen(); return; }
+
+    var resp = await fetch('/api/jobs/' + jobId);
+    var job  = await resp.json();
+    var iqs  = (job.interview_questions || []).filter(function(q) { return q.type === 'interview'; });
+
+    if (!iqs.length) { buildTrack(); showStartScreen(); return; }
+
+    // Replace SEGMENTS with custom audio questions
+    SEGMENTS.length = 0;
+    SEGMENTS.push({
+      id: 'intro', label: 'Intro', response_type: 'ready_confirm', response_seconds: 0,
+      question: 'Welcome to your interview for ' + (JOB_TITLE || 'this position') + '. You will be asked ' + iqs.length + ' questions. When ready, click Start Interview.', tip: ''
+    });
+    iqs.forEach(function(q, i) {
+      var id = i === iqs.length - 1 ? 'final' : 'q' + (i + 1);
+      SEGMENTS.push({
+        id: id, label: 'Q' + (i + 1), response_type: 'record', response_seconds: 120,
+        question: q.question, tip: 'Take a moment to think before you begin recording.'
+      });
+    });
+    SEGMENTS.push({ id: 'outro', label: 'Close', response_type: 'none', response_seconds: 0, question: 'Thank you for completing your interview. Your responses have been submitted.', tip: '' });
+
+    buildTrack();
+    showStartScreen();
+  } catch(e) {
+    console.error('Audio interview load error:', e.message);
+    buildTrack();
+    showStartScreen();
+  }
+}
 
 function showStartScreen() {
   const overlay = document.getElementById('video-overlay');
@@ -931,9 +993,14 @@ async function startInterview() {
 
 async function requestPermissions() {
   try {
-    cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-    document.getElementById('pip-video').srcObject = cameraStream;
-    document.getElementById('pip-wrap').classList.add('active');
+    var constraints = INTERVIEW_FORMAT === 'audio'
+      ? { video: false, audio: true }
+      : { video: true, audio: true };
+    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (INTERVIEW_FORMAT !== 'audio') {
+      document.getElementById('pip-video').srcObject = cameraStream;
+      document.getElementById('pip-wrap').classList.add('active');
+    }
   } catch {
     document.getElementById('perm-alert').classList.add('show');
   }
@@ -1015,6 +1082,21 @@ function loadSegment(index) {
   video.src = videoUrl;
   video.load();
 
+  // For audio format, show question text and go directly to record/confirm
+  if (INTERVIEW_FORMAT === 'audio') {
+    hideOverlay();
+    // Show the question display panel for audio
+    var qd = document.getElementById('question-display');
+    if (seg.question) {
+      qd.classList.add('show');
+      document.getElementById('q-label-text').textContent = seg.id === 'intro' ? 'Welcome' : seg.label;
+      document.getElementById('q-body-text').textContent = seg.question;
+    }
+    showState('waiting');
+    setTimeout(function() { handleSegmentEnd(seg, index); }, 800);
+    return;
+  }
+
   video.oncanplay = () => {
     hideOverlay();
     video.play().catch(() => {
@@ -1074,7 +1156,7 @@ function openRecordWindow(seg) {
   updateTimerDisplay(timeRemaining);
   resetRing();
   startRecording();
-  showPiP();
+  if (INTERVIEW_FORMAT !== 'audio') showPiP();
   startCountdown();
 }
 
@@ -1107,12 +1189,18 @@ function resetRing() {
 async function startRecording() {
   try {
     if (!cameraStream || cameraStream.getTracks().some(t => t.readyState === 'ended')) {
-      cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-      document.getElementById('pip-video').srcObject = cameraStream;
+      var mediaConstraints = INTERVIEW_FORMAT === 'audio'
+        ? { video: false, audio: true }
+        : { video: true, audio: true };
+      cameraStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
+      if (INTERVIEW_FORMAT !== 'audio') document.getElementById('pip-video').srcObject = cameraStream;
     }
 
     recordedChunks = [];
-    const opts = { mimeType: MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' : 'video/webm' };
+    var mimeType = INTERVIEW_FORMAT === 'audio'
+      ? (MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm')
+      : (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus') ? 'video/webm;codecs=vp8,opus' : 'video/webm');
+    const opts = { mimeType: mimeType };
     mediaRecorder = new MediaRecorder(cameraStream, opts);
     mediaRecorder.ondataavailable = e => { if (e.data?.size > 0) recordedChunks.push(e.data); };
     mediaRecorder.start(500);
@@ -1127,7 +1215,8 @@ function stopRecording() {
   return new Promise(resolve => {
     if (!mediaRecorder || mediaRecorder.state === 'inactive') { resolve(null); return; }
     mediaRecorder.onstop = () => {
-      const blob = new Blob(recordedChunks, { type: 'video/webm' });
+      const blobType = INTERVIEW_FORMAT === 'audio' ? 'audio/webm' : 'video/webm';
+      const blob = new Blob(recordedChunks, { type: blobType });
       resolve(blob.size > 0 ? blob : null);
     };
     mediaRecorder.stop();
@@ -1142,7 +1231,7 @@ function stopRecording() {
 async function submitResponse() {
   clearInterval(timerInterval);
   showState('uploading');
-  hidePiP();
+  if (INTERVIEW_FORMAT !== 'audio') hidePiP();
 
   // Capture segment ID NOW before currentIndex changes
   const thisSegId  = SEGMENTS[currentIndex].id;
@@ -1216,7 +1305,11 @@ async function uploadWithProgress(blob, segId) {
   fd.append('client_email',        CLIENT_EMAIL        || '');
   fd.append('hiring_manager_name', HIRING_MANAGER_NAME || '');
   fd.append('cand_email',          CAND_EMAIL          || '');
-  fd.append('cand_email',          CAND_EMAIL          || '');
+  fd.append('phone',               APP_PHONE           || '');
+  fd.append('location',            APP_LOCATION        || '');
+  fd.append('linkedin',            APP_LINKEDIN        || '');
+  fd.append('authorized',          APP_AUTHORIZED      || '');
+  fd.append('sponsorship',         APP_SPONSORSHIP     || '');
 
   document.getElementById('upload-lbl').textContent = 'Uploading...';
 
