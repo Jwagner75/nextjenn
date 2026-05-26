@@ -164,9 +164,9 @@ nav{background:var(--navy);padding:16px 32px;display:flex;align-items:center;jus
 
     <!-- STATE: READY (before recording) -->
     <div class="state-panel" id="state-ready">
-      <div class="state-icon">💭</div>
-      <div class="state-title">Are You Ready?</div>
-      <div class="state-sub">Take a moment to gather your thoughts. Click when you're ready to record your response.</div>
+      <div class="state-icon" id="ready-icon">💭</div>
+      <div class="state-title" id="ready-title">Ready to Record?</div>
+      <div class="state-sub" id="ready-sub">Read the question on screen. When you are ready to record your response, click the button below.</div>
       <button class="btn btn-green" onclick="beginRecording()">I'm Ready — Start Recording</button>
     </div>
 
@@ -390,15 +390,23 @@ function loadSegment(idx) {
     hideOverlay();
     if (seg.type === 'outro') { completeInterview(); return; }
     if (seg.type === 'intro') {
+      document.getElementById('ready-icon').textContent = '👋';
+      document.getElementById('ready-title').textContent = 'Welcome!';
+      document.getElementById('ready-sub').textContent = seg.question || 'Your audio interview is about to begin. Click below when you are ready to start your first question.';
+      document.querySelector('#state-ready .btn-green').textContent = "Let's Begin →";
+      window._introMode = true;
       showState('ready');
-      document.getElementById('waiting-title').textContent = 'Welcome';
-      // Try to speak the intro
-      speak(seg.question, function() {});
       return;
     }
-    // For questions — show waiting briefly then ready
+    // Reset for question mode
+    document.getElementById('ready-icon').textContent = '💭';
+    document.getElementById('ready-title').textContent = 'Ready to Record?';
+    document.getElementById('ready-sub').textContent = 'Read the question on screen. When you are ready to record your response, click the button below.';
+    document.querySelector('#state-ready .btn-green').textContent = "I'm Ready — Start Recording";
+    window._introMode = false;
+    // For questions — speak the question then show ready
     showState('waiting');
-    document.getElementById('waiting-title').textContent = seg.label + ' — Listen';
+    document.getElementById('waiting-title').textContent = seg.label + ' — Jenn is speaking...';
     speak(seg.question, function() {
       showState('ready');
     });
@@ -464,6 +472,13 @@ function afterVideoEnds(seg, idx) {
 
 // ── BEGIN RECORDING (after I'm Ready click)
 function beginRecording() {
+  // If intro — just advance to first question
+  if (window._introMode) {
+    window._introMode = false;
+    var next = segIdx + 1;
+    if (next < SEGMENTS.length) loadSegment(next);
+    return;
+  }
   var seg = SEGMENTS[segIdx];
   startRecording(seg);
 }
@@ -590,7 +605,50 @@ function speak(text, callback) {
   setTimeout(finish, ms);
 }
 
-function delay(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
+// ── ELEVENLABS VOICE (Jenn's cloned voice)
+var EL_API_KEY  = 'c0957f4708606f8d8e016f84fbdf9894d29c312a2905f8e6a4101d69a7e74b14';
+var EL_VOICE_ID = 'KxcNgCGZHsHnOFI8pGfP';
+var currentAudio = null;
+
+async function speak(text, callback) {
+  if (!text) { setTimeout(callback, 500); return; }
+  // Stop any current audio
+  if (currentAudio) { currentAudio.pause(); currentAudio = null; }
+  try {
+    var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/' + EL_VOICE_ID, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'xi-api-key': EL_API_KEY,
+      },
+      body: JSON.stringify({
+        text: text,
+        model_id: 'eleven_monolingual_v1',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75 }
+      })
+    });
+    if (!resp.ok) throw new Error('ElevenLabs error: ' + resp.status);
+    var blob = await resp.blob();
+    var url  = URL.createObjectURL(blob);
+    currentAudio = new Audio(url);
+    currentAudio.onended = function() { URL.revokeObjectURL(url); callback(); };
+    currentAudio.onerror = function() { URL.revokeObjectURL(url); callback(); };
+    currentAudio.play();
+  } catch(e) {
+    console.error('ElevenLabs error:', e.message);
+    // Fallback to browser TTS
+    if (window.speechSynthesis) {
+      var utter = new SpeechSynthesisUtterance(text);
+      utter.rate = 0.9;
+      utter.onend = callback;
+      utter.onerror = callback;
+      window.speechSynthesis.speak(utter);
+    } else {
+      setTimeout(callback, 2000);
+    }
+  }
+}
 </script>
 </body>
 </html>
+function delay(ms) { return new Promise(function(r) { setTimeout(r, ms); }); }
