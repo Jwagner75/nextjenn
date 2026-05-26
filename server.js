@@ -740,7 +740,13 @@ app.get('/setup',         function(req, res) { res.sendFile(path.join(__dirname,
 app.get('/apply/:jobId',  function(req, res) { res.sendFile(path.join(__dirname, 'apply.html')); });
 app.get('/apply-simple',  function(req, res) { res.sendFile(path.join(__dirname, 'apply.html')); });
 app.get('/schedule',      function(req, res) { res.sendFile(path.join(__dirname, 'schedule-interview.html')); });
-app.get('/interview',     function(req, res) { res.sendFile(path.join(__dirname, 'interview-page.html')); });
+app.get('/audio-interview', function(req, res) { res.sendFile(path.join(__dirname, 'audio-interview.html')); });
+app.get('/interview', function(req, res) {
+  if (req.query.format === 'audio') {
+    return res.sendFile(path.join(__dirname, 'audio-interview.html'));
+  }
+  res.sendFile(path.join(__dirname, 'interview-page.html'));
+});
 app.get('/dashboard/:clientId', function(req, res) { res.sendFile(path.join(__dirname, 'dashboard.html')); });
 app.get('/jobs/:jobId',   function(req, res) { res.sendFile(path.join(__dirname, 'job-posting.html')); });
 app.get('/health',        function(req, res) { res.json({ status: 'ok', sessions: Object.keys(sessions).length }); });
