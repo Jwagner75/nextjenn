@@ -8,7 +8,7 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'DM Sans',sans-serif;background:#0D1117;min-height:100vh;color:#fff;display:flex;flex-direction:column;}
-nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;}
+nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
 .logo{font-family:'Rajdhani',sans-serif;font-size:22px;font-weight:700;color:#fff;letter-spacing:.08em;}
 .logo span{color:#8892A4;}
 .live{font-size:11px;color:#E8855A;letter-spacing:.1em;display:flex;align-items:center;gap:6px;}
@@ -16,23 +16,29 @@ nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify
 @keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
 .main{flex:1;display:grid;grid-template-columns:1fr 360px;gap:20px;max-width:1000px;margin:0 auto;width:100%;padding:24px;}
 .left{display:flex;flex-direction:column;gap:16px;}
-.jenn-box{background:#1B2A4A;border-radius:16px;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;position:relative;}
+
+/* Jenn video box */
+.jenn-box{background:#1B2A4A;border-radius:16px;overflow:hidden;position:relative;}
+#intro-video{width:100%;display:block;border-radius:16px;}
+.audio-bg{background:#1B2A4A;border-radius:16px;aspect-ratio:16/9;display:none;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.audio-bg.show{display:flex;}
 .mic{width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:36px;}
-.mic.speaking{animation:mp 1.5s infinite;}
+.mic.pulse{animation:mp 1.5s infinite;}
 @keyframes mp{0%,100%{box-shadow:0 0 0 0 rgba(200,255,0,.3)}50%{box-shadow:0 0 0 24px rgba(200,255,0,0)}}
-.jenn-label{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;letter-spacing:.08em;}
-.jenn-sub{font-size:12px;color:rgba(255,255,255,.5);}
+
 .track{background:rgba(255,255,255,.06);border-radius:10px;padding:14px 18px;display:flex;align-items:center;gap:6px;}
 .td{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:rgba(255,255,255,.4);flex-shrink:0;transition:all .3s;font-family:'Rajdhani',sans-serif;}
 .td.active{border-color:#fff;background:#fff;color:#1B2A4A;}
 .td.done{border-color:#2E7D5E;background:#2E7D5E;color:#fff;}
 .tl{flex:1;height:2px;background:rgba(255,255,255,.15);}
 .tl.done{background:#2E7D5E;}
+
 .right{display:flex;flex-direction:column;gap:14px;}
 .q-card{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:20px;display:none;}
 .q-card.show{display:block;}
 .q-lbl{font-size:10px;font-weight:700;color:#8892A4;text-transform:uppercase;letter-spacing:.15em;margin-bottom:8px;}
 .q-txt{font-size:16px;color:#fff;line-height:1.65;}
+
 .panel{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:24px;text-align:center;display:none;}
 .panel.on{display:block;}
 .p-icon{font-size:40px;margin-bottom:12px;}
@@ -63,45 +69,45 @@ nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify
   <div class="live"><div class="dot"></div>AUDIO INTERVIEW</div>
   <div id="nav-job" style="font-size:13px;color:#8892A4;"></div>
 </nav>
+
 <div class="main">
   <div class="left">
     <div class="jenn-box">
-      <div class="mic" id="mic-icon">🎙️</div>
-      <div class="jenn-label" id="jenn-status">NEXT-JENN</div>
-      <div class="jenn-sub" id="jenn-sub">Audio Interview — Microphone Only</div>
+      <!-- Intro video (shown first) -->
+      <video id="intro-video" src="https://pub-4fbcdc19ad514deeae198f350111a4fb.r2.dev/intro.mp4" playsinline webkit-playsinline controls style="width:100%;display:none;border-radius:16px;"></video>
+      <!-- Audio background (shown during questions, hidden initially) -->
+      <div class="audio-bg" id="audio-bg" style="display:none;">
+        <div class="mic" id="mic-icon">🎙️</div>
+        <div style="font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;" id="jenn-status">NEXT-JENN</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.5);" id="jenn-sub">Audio Interview</div>
+      </div>
     </div>
     <div class="track" id="track"></div>
     <div style="font-size:12px;color:rgba(255,255,255,.4);text-align:center;" id="cand-info"></div>
   </div>
+
   <div class="right">
     <div class="q-card" id="q-card">
       <div class="q-lbl" id="q-lbl">Question</div>
       <div class="q-txt" id="q-txt"></div>
     </div>
 
-    <!-- START -->
-    <div class="panel on" id="p-start">
-      <div class="p-icon">👋</div>
-      <div class="p-title">Welcome!</div>
-      <div class="p-sub" id="start-sub">Your audio interview is ready. Find a quiet space, then click below to begin.</div>
-      <div class="err" id="perm-err">⚠ Please allow microphone access to continue.</div>
-      <button class="btn green" onclick="startInterview()">Begin Interview →</button>
+    <!-- WATCHING INTRO VIDEO -->
+    <div class="panel on" id="p-intro">
+      <div class="p-icon">🎥</div>
+      <div class="p-title">Welcome to Next-Jenn</div>
+      <div class="p-sub" id="intro-sub">Click the button below to watch Jenn's introduction before your interview begins.</div>
+      <div class="err" id="perm-err"></div>
+      <button class="btn green" id="watch-btn" onclick="playIntroVideo()">▶ Watch Introduction</button>
+      <button class="btn" id="begin-btn" onclick="beginInterview()" style="display:none;margin-top:8px;">Begin Interview →</button>
     </div>
 
-    <!-- JENN SPEAKING -->
+    <!-- JENN SPEAKING QUESTION -->
     <div class="panel" id="p-speaking">
       <div class="p-icon">🔊</div>
       <div class="p-title">Jenn is Speaking...</div>
-      <div class="p-sub">Listen to the question, then click Ready when Jenn finishes.</div>
-      <button class="btn" onclick="skipSpeech()" style="background:rgba(255,255,255,.1);font-size:12px;padding:10px;">Skip → I'm Ready</button>
-    </div>
-
-    <!-- READY -->
-    <div class="panel" id="p-ready">
-      <div class="p-icon">💭</div>
-      <div class="p-title">Ready to Answer?</div>
-      <div class="p-sub">Read the question on screen. Click below when ready to record.</div>
-      <button class="btn green" onclick="beginRecording()">I'm Ready — Start Recording</button>
+      <div class="p-sub">Listen to the question. Recording starts automatically when Jenn finishes.</div>
+      <button class="btn" onclick="skipSpeech()" style="background:rgba(255,255,255,.1);font-size:12px;padding:10px;margin-top:0;">Skip — Start Recording Now</button>
     </div>
 
     <!-- RECORDING -->
@@ -123,7 +129,7 @@ nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify
     <!-- SAVING -->
     <div class="panel" id="p-save">
       <div class="p-icon">⬆️</div>
-      <div class="p-title">Saving...</div>
+      <div class="p-title">Saving Response...</div>
       <div class="p-sub">Please wait while your response is saved.</div>
     </div>
 
@@ -135,153 +141,149 @@ nav{background:#1B2A4A;padding:16px 32px;display:flex;align-items:center;justify
     </div>
   </div>
 </div>
+
 <script>
 var P = new URLSearchParams(window.location.search);
-var SESSION_ID    = P.get('session') || ('s-'+Date.now());
-var JOB_TITLE     = P.get('job')     || '';
-var CAND_NAME     = P.get('name')    || '';
-var CLIENT_EMAIL  = P.get('client')  || '';
-var COMPANY       = P.get('company') || '';
-var CAND_EMAIL    = P.get('cemail')  || '';
-var JOB_ID        = P.get('jobid')   || '';
-var EL_KEY        = 'c0957f4708606f8d8e016f84fbdf9894d29c312a2905f8e6a4101d69a7e74b14';
-var EL_VOICE      = 'KxcNgCGZHsHnOFI8pGfP';
+var SESSION_ID   = P.get('session') || ('s-'+Date.now());
+var JOB_TITLE    = P.get('job')     || '';
+var CAND_NAME    = P.get('name')    || '';
+var CLIENT_EMAIL = P.get('client')  || '';
+var COMPANY      = P.get('company') || '';
+var CAND_EMAIL   = P.get('cemail')  || '';
+var JOB_ID       = P.get('jobid')   || '';
+var EL_KEY       = 'c0957f4708606f8d8e016f84fbdf9894d29c312a2905f8e6a4101d69a7e74b14';
+var EL_VOICE     = 'KxcNgCGZHsHnOFI8pGfP';
 
-document.getElementById('nav-job').textContent   = JOB_TITLE;
+document.getElementById('nav-job').textContent  = JOB_TITLE;
 document.getElementById('cand-info').textContent = CAND_NAME;
 
 var SEGS = [];
 var segIdx = 0;
-var stream = null;
+var micStream = null;
 var recorder = null;
 var chunks = [];
 var timerInt = null;
 var timeLeft = 0;
 var totalTime = 0;
-var uploads = {};
 var currentAudio = null;
 var skipFlag = false;
 
-// Load job questions
+// ── LOAD JOB QUESTIONS
 window.addEventListener('load', async function() {
-  if (!JOB_ID) { showErr('No job ID found.'); return; }
+  // Load questions first, then enable button
+  document.getElementById('watch-btn').disabled = true;
+  document.getElementById('watch-btn').textContent = 'Loading questions...';
+
+  if (!JOB_ID) {
+    document.getElementById('watch-btn').textContent = 'No Job ID — Cannot Start';
+    return;
+  }
   try {
     var r = await fetch('/api/jobs/' + JOB_ID);
     var job = await r.json();
     var iqs = (job.interview_questions||[]).filter(function(q){return q.type==='interview';});
-    if (!iqs.length) { showErr('No interview questions found for this job.'); return; }
-    SEGS.push({ id:'intro', label:'Intro', type:'intro', q:'Welcome to your audio interview for ' + (JOB_TITLE||'this position') + '. You will be asked ' + iqs.length + ' question'+(iqs.length!==1?'s':'')+'. When ready, click Begin Interview.', secs:0 });
+    if (!iqs.length) {
+      btn.textContent = 'No Questions Found';
+      document.getElementById('perm-err').textContent = 'No interview questions found for this job. Please contact the hiring team.';
+      document.getElementById('perm-err').style.display = 'block';
+      return;
+    }
+    SEGS = [];
     iqs.forEach(function(q,i){
-      SEGS.push({ id:'q'+(i+1), label:'Q'+(i+1), type:'record', q:q.question, secs:120 });
+      SEGS.push({ id: i===iqs.length-1?'final':'q'+(i+1), label:'Q'+(i+1), type:'record', q:q.question, secs:120 });
     });
-    SEGS[SEGS.length-1].id = 'final';
-    SEGS[SEGS.length-1].label = 'Final';
-    document.getElementById('start-sub').textContent = 'Your audio interview for ' + (JOB_TITLE||'this position') + ' is ready. Find a quiet space and click below to begin.';
     buildTrack();
-  } catch(e) { showErr('Could not load interview: '+e.message); }
+    console.log('Loaded', SEGS.length, 'questions for job', JOB_ID);
+    // Questions loaded — show watch intro button
+    console.log('Questions ready, showing watch button');
+    document.getElementById('watch-btn').textContent = '▶ Watch Introduction';
+    document.getElementById('watch-btn').disabled = false;
+  } catch(e) {
+    console.error('Load error:', e.message);
+    btn.textContent = 'Error Loading — Retry';
+    btn.disabled = false;
+    btn.onclick = function() { window.location.reload(); };
+    document.getElementById('perm-err').textContent = 'Could not load interview: ' + e.message;
+    document.getElementById('perm-err').style.display = 'block';
+  }
 });
 
-function buildTrack() {
-  var t = document.getElementById('track'); t.innerHTML = '';
-  SEGS.forEach(function(s,i){
-    if (i>0){ var l=document.createElement('div'); l.className='tl'; l.id='tl'+i; t.appendChild(l); }
-    var d=document.createElement('div'); d.className='td'; d.id='td'+i;
-    d.textContent = s.id==='intro'?'→': s.id==='final'?'★': (i);
-    t.appendChild(d);
+// ── PLAY INTRO VIDEO
+function playIntroVideo() {
+  var vid = document.getElementById('intro-video');
+  document.getElementById('watch-btn').style.display = 'none';
+  document.getElementById('intro-sub').textContent = "Watch Jenn's introduction. The Begin Interview button will appear when finished.";
+  vid.style.display = 'block';
+  vid.play().catch(function(e) {
+    console.error('Video play error:', e.message);
+    // If video fails, just show begin button
+    showBeginButton();
   });
+  vid.onended = showBeginButton;
+  // Fallback - show button after 60s in case video is long
+  setTimeout(showBeginButton, 65000);
 }
 
-function updateTrack() {
-  SEGS.forEach(function(_,i){
-    var d=document.getElementById('td'+i); var l=document.getElementById('tl'+i);
-    if(!d)return;
-    if(i<segIdx){d.className='td done';d.textContent='✓';}
-    else if(i===segIdx){d.className='td active';}
-    else{d.className='td';}
-    if(l) l.className='tl'+(i<=segIdx?' done':'');
-  });
+function showBeginButton() {
+  document.getElementById('intro-sub').textContent = "Jenn's introduction is complete. Click below to begin your interview.";
+  document.getElementById('begin-btn').style.display = 'block';
 }
 
-function show(id) {
-  ['start','speaking','ready','rec','save','done'].forEach(function(s){
-    document.getElementById('p-'+s).classList.toggle('on', s===id);
-  });
-}
-
-function showQ(seg) {
-  var c=document.getElementById('q-card');
-  if(seg.q && seg.id!=='intro'){
-    c.classList.add('show');
-    document.getElementById('q-lbl').textContent = seg.label+' — Read the question';
-    document.getElementById('q-txt').textContent = seg.q;
-  } else { c.classList.remove('show'); }
-}
-
-function setJennStatus(txt, sub, speaking) {
-  document.getElementById('jenn-status').textContent = txt;
-  document.getElementById('jenn-sub').textContent = sub;
-  document.getElementById('mic-icon').classList.toggle('speaking', !!speaking);
-}
-
-async function startInterview() {
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({video:false, audio:true});
-    loadSeg(0);
-  } catch(e) {
-    document.getElementById('perm-err').style.display='block';
+// ── BEGIN INTERVIEW (after video + button click)
+async function beginInterview() {
+  if (!SEGS.length) {
+    document.getElementById('perm-err').textContent = 'Interview questions are still loading. Please wait a moment and try again.';
+    document.getElementById('perm-err').style.display = 'block';
+    return;
   }
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({video:false, audio:true});
+  } catch(e) {
+    document.getElementById('perm-err').textContent = '⚠ Please allow microphone access to continue.';
+    document.getElementById('perm-err').style.display = 'block';
+    return;
+  }
+  document.getElementById('perm-err').style.display = 'none';
+  // Switch left panel from video to audio background
+  document.getElementById('intro-video').style.display = 'none';
+  document.getElementById('audio-bg').style.display = 'flex';
+  // Start first question
+  loadSeg(0);
 }
 
+// ── LOAD SEGMENT
 async function loadSeg(idx) {
   segIdx = idx;
   updateTrack();
+  if (idx >= SEGS.length) { finishInterview(); return; }
   var seg = SEGS[idx];
   showQ(seg);
-
-  if (seg.type === 'intro') {
-    setJennStatus('NEXT-JENN','Audio Interview — Microphone Only', false);
-    show('start');
-    document.querySelector('#p-start .btn').textContent = "Let's Begin →";
-    document.querySelector('#p-start .btn').onclick = function() { loadSeg(1); };
-    return;
-  }
-
-  // Speak question with ElevenLabs
   show('speaking');
-  setJennStatus('JENN IS SPEAKING...', 'Listen to the question', true);
+  setStatus('JENN IS SPEAKING...', 'Listen to the question', true);
   skipFlag = false;
   await speakEL(seg.q, function() {
-    if (!skipFlag) { showReady(); }
+    if (!skipFlag) beginRecording();
   });
 }
 
-function showReady() {
-  var seg = SEGS[segIdx];
-  show('ready');
-  setJennStatus('YOUR TURN','Click below when ready to record', false);
-  if (seg.id === 'final') {
-    document.querySelector('#p-ready .btn').textContent = "I'm Ready — Record Final Response";
-  } else {
-    document.querySelector('#p-ready .btn').textContent = "I'm Ready — Start Recording";
-  }
-}
-
+// ── SKIP SPEECH
 function skipSpeech() {
   skipFlag = true;
   if (currentAudio) { currentAudio.pause(); currentAudio = null; }
-  showReady();
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  beginRecording();
 }
 
+// ── BEGIN RECORDING
 function beginRecording() {
   var seg = SEGS[segIdx];
   show('rec');
-  setJennStatus('RECORDING','Speak clearly into your microphone', true);
-  if (seg.id==='final') document.getElementById('btn-done').textContent = 'Submit Interview ✓';
-  else document.getElementById('btn-done').textContent = 'Done — Next Question';
+  setStatus('RECORDING', 'Speak clearly', true);
+  document.getElementById('btn-done').textContent = seg.id==='final' ? 'Submit Interview ✓' : 'Done — Next Question';
 
   chunks = [];
   var mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm';
-  recorder = new MediaRecorder(stream, { mimeType: mime });
+  recorder = new MediaRecorder(micStream, {mimeType: mime});
   recorder.ondataavailable = function(e){ if(e.data.size>0) chunks.push(e.data); };
   recorder.start(1000);
 
@@ -295,31 +297,22 @@ function beginRecording() {
   }, 1000);
 }
 
-function updateTimer() {
-  var m=Math.floor(timeLeft/60), s=timeLeft%60;
-  document.getElementById('tnum').textContent = m+':'+(s<10?'0':'')+s;
-  var pct = totalTime>0 ? timeLeft/totalTime : 1;
-  var circ = 175.9;
-  document.getElementById('tfill').style.strokeDashoffset = circ*(1-pct);
-  document.getElementById('tfill').style.stroke = pct>.5?'#2E7D5E':pct>.25?'#C9963A':'#E05252';
-}
-
+// ── SUBMIT RESPONSE
 async function submitResponse() {
   clearInterval(timerInt);
   show('save');
-  setJennStatus('SAVING...','Please wait', false);
+  setStatus('SAVING...', 'Please wait', false);
   var seg = SEGS[segIdx];
   var blob = await stopRec();
   if (blob && blob.size > 500) await uploadBlob(blob, seg);
-  var next = segIdx + 1;
-  if (next < SEGS.length) { await delay(800); loadSeg(next); }
-  else { finishInterview(); }
+  await delay(600);
+  loadSeg(segIdx + 1);
 }
 
 function stopRec() {
   return new Promise(function(res){
     if (!recorder || recorder.state==='inactive') { res(null); return; }
-    recorder.onstop = function(){ res(new Blob(chunks,{type:'audio/webm'})); };
+    recorder.onstop = function(){ res(new Blob(chunks, {type:'audio/webm'})); };
     recorder.stop();
   });
 }
@@ -328,29 +321,31 @@ async function uploadBlob(blob, seg) {
   try {
     var fd = new FormData();
     fd.append('video', blob, seg.id+'.webm');
-    fd.append('session_id',   SESSION_ID);
-    fd.append('segment_id',   seg.id);
+    fd.append('session_id',    SESSION_ID);
+    fd.append('segment_id',    seg.id);
     fd.append('segment_index', String(segIdx));
-    fd.append('cand_name',    CAND_NAME);
-    fd.append('cand_email',   CAND_EMAIL);
-    fd.append('job_title',    JOB_TITLE);
-    fd.append('company_name', COMPANY);
-    fd.append('client_email', CLIENT_EMAIL);
-    fd.append('format',       'audio');
-    fd.append('job_id',       JOB_ID);
+    fd.append('cand_name',     CAND_NAME);
+    fd.append('cand_email',    CAND_EMAIL);
+    fd.append('job_title',     JOB_TITLE);
+    fd.append('company_name',  COMPANY);
+    fd.append('client_email',  CLIENT_EMAIL);
+    fd.append('format',        'audio');
+    fd.append('job_id',        JOB_ID);
     var r = await fetch('/api/upload', {method:'POST', body:fd});
     var d = await r.json();
-    if (d.video_url) uploads[seg.id] = d.video_url;
+    console.log('Uploaded:', seg.id, d.video_url);
   } catch(e) { console.error('Upload error:', e.message); }
 }
 
+// ── FINISH
 function finishInterview() {
   show('done');
-  setJennStatus('THANK YOU!','Interview complete', false);
+  setStatus('THANK YOU!', 'Interview complete', false);
   document.getElementById('q-card').classList.remove('show');
-  if (stream) stream.getTracks().forEach(function(t){t.stop();});
+  if (micStream) micStream.getTracks().forEach(function(t){t.stop();});
 }
 
+// ── ELEVENLABS
 async function speakEL(text, callback) {
   try {
     var resp = await fetch('https://api.elevenlabs.io/v1/text-to-speech/'+EL_VOICE, {
@@ -359,7 +354,7 @@ async function speakEL(text, callback) {
       body: JSON.stringify({
         text: text,
         model_id: 'eleven_monolingual_v1',
-        voice_settings: { stability:0.5, similarity_boost:0.75 }
+        voice_settings: {stability:0.5, similarity_boost:0.75}
       })
     });
     if (!resp.ok) throw new Error('EL '+resp.status);
@@ -371,19 +366,63 @@ async function speakEL(text, callback) {
     currentAudio.play();
   } catch(e) {
     console.error('ElevenLabs:', e.message);
-    // Fallback
     if (window.speechSynthesis) {
       var u = new SpeechSynthesisUtterance(text);
       u.rate=0.9; u.onend=callback; u.onerror=callback;
       window.speechSynthesis.speak(u);
-    } else { setTimeout(callback, Math.max(2000, text.length*60)); }
+      setTimeout(callback, Math.max(3000, text.length*70));
+    } else { setTimeout(callback, 2000); }
   }
 }
 
-function showErr(msg) {
-  document.getElementById('p-start').classList.add('on');
-  document.getElementById('start-sub').textContent = msg;
-  document.getElementById('start-sub').style.color = '#E05252';
+// ── HELPERS
+function show(id) {
+  ['intro','speaking','rec','save','done'].forEach(function(s){
+    var el = document.getElementById('p-'+s);
+    if (el) el.classList.toggle('on', s===id);
+  });
+}
+
+function showQ(seg) {
+  var c = document.getElementById('q-card');
+  c.classList.add('show');
+  document.getElementById('q-lbl').textContent = seg.label;
+  document.getElementById('q-txt').textContent  = seg.q;
+}
+
+function setStatus(title, sub, pulse) {
+  document.getElementById('jenn-status').textContent = title;
+  document.getElementById('jenn-sub').textContent    = sub;
+  document.getElementById('mic-icon').classList.toggle('pulse', !!pulse);
+}
+
+function buildTrack() {
+  var t = document.getElementById('track'); t.innerHTML = '';
+  SEGS.forEach(function(s,i){
+    if (i>0){ var l=document.createElement('div'); l.className='tl'; l.id='tl'+i; t.appendChild(l); }
+    var d=document.createElement('div'); d.className='td'; d.id='td'+i;
+    d.textContent = s.id==='final' ? '★' : 'Q'+(i+1);
+    t.appendChild(d);
+  });
+}
+
+function updateTrack() {
+  SEGS.forEach(function(_,i){
+    var d=document.getElementById('td'+i); var l=document.getElementById('tl'+i);
+    if (!d) return;
+    if (i<segIdx)       { d.className='td done'; d.textContent='✓'; }
+    else if (i===segIdx){ d.className='td active'; }
+    else                { d.className='td'; }
+    if (l) l.className='tl'+(i<segIdx?' done':'');
+  });
+}
+
+function updateTimer() {
+  var m=Math.floor(timeLeft/60), s=timeLeft%60;
+  document.getElementById('tnum').textContent = m+':'+(s<10?'0':'')+s;
+  var pct = totalTime>0 ? timeLeft/totalTime : 1;
+  document.getElementById('tfill').style.strokeDashoffset = 175.9*(1-pct);
+  document.getElementById('tfill').style.stroke = pct>.5?'#2E7D5E':pct>.25?'#C9963A':'#E05252';
 }
 
 function delay(ms){ return new Promise(function(r){setTimeout(r,ms);}); }
