@@ -817,7 +817,8 @@ const APP_LOCATION        = urlParams.get('location')    || '';
 const APP_LINKEDIN        = urlParams.get('linkedin')    || '';
 const APP_AUTHORIZED      = urlParams.get('authorized')  || '';
 const APP_SPONSORSHIP     = urlParams.get('sponsorship') || '';
-const INTERVIEW_FORMAT    = urlParams.get('format')      || 'video';
+const INTERVIEW_FORMAT_URL = urlParams.get('format') || 'video';
+var INTERVIEW_FORMAT       = INTERVIEW_FORMAT_URL;
 const JOB_ID              = urlParams.get('jobid')       || '';
 
 // Track video URLs as candidate records each response
@@ -911,9 +912,23 @@ setInterval(() => {
 // ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('info-role').textContent = JOB_TITLE || 'Open Role';
+  console.log('URL format param:', INTERVIEW_FORMAT, '| Job ID:', JOB_ID);
 
-  // If audio format, hide video elements immediately
-  if (INTERVIEW_FORMAT === 'audio') {
+  // Always look up format from database if we have a job ID — don't trust URL param alone
+  var actualFormat = INTERVIEW_FORMAT;
+  if (JOB_ID) {
+    try {
+      var jobResp = await fetch('/api/jobs/' + JOB_ID);
+      var jobData = await jobResp.json();
+      if (jobData.interview_format) {
+        actualFormat = jobData.interview_format;
+        INTERVIEW_FORMAT = actualFormat; // update global so all checks work
+        console.log('Format from DB:', actualFormat);
+      }
+    } catch(e) { console.log('Could not load job format from DB:', e.message); }
+  }
+
+  if (actualFormat === 'audio') {
     var permText = document.getElementById('perm-text');
     if (permText) permText.textContent = 'microphone';
     document.getElementById('jenn-video').style.display = 'none';
@@ -928,7 +943,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     jennWrap.style.background = '#1B2A4A';
     jennWrap.style.position = 'relative';
     jennWrap.appendChild(audioIndicator);
-    await loadAudioInterview();
+    await loadAudioInterview(jobData);
   } else {
     buildTrack();
     showStartScreen();
@@ -936,14 +951,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 // ── AUDIO INTERVIEW MODE
-async function loadAudioInterview() {
+async function loadAudioInterview(preloadedJob) {
   try {
-    var jobId = JOB_ID || urlParams.get('jobid');
-    if (!jobId) { buildTrack(); showStartScreen(); return; }
-
-    var resp = await fetch('/api/jobs/' + jobId);
-    var job  = await resp.json();
-    var iqs  = (job.interview_questions || []).filter(function(q) { return q.type === 'interview'; });
+    var job;
+    if (preloadedJob && preloadedJob.interview_questions) {
+      job = preloadedJob;
+    } else {
+      var jobId = JOB_ID || urlParams.get('jobid');
+      if (!jobId) { buildTrack(); showStartScreen(); return; }
+      var resp = await fetch('/api/jobs/' + jobId);
+      job = await resp.json();
+    }
+    var iqs = (job.interview_questions || []).filter(function(q) { return q.type === 'interview'; });
 
     if (!iqs.length) { buildTrack(); showStartScreen(); return; }
 
@@ -1064,6 +1083,33 @@ function loadSegment(index) {
 
   showState('waiting');
   hidePiP();
+
+  // ── AUDIO MODE — skip all video, show question text, use speech synthesis
+  if (INTERVIEW_FORMAT === 'audio') {
+    hideOverlay();
+    var qd = document.getElementById('question-display');
+    if (seg.question && seg.id !== 'outro') {
+      qd.classList.add('show');
+      document.getElementById('q-label-text').textContent = seg.id === 'intro' ? 'Welcome' : 'Question ' + (index);
+      document.getElementById('q-body-text').textContent  = seg.question;
+      // Read question aloud using text-to-speech
+      if (window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        var utter = new SpeechSynthesisUtterance(seg.question);
+        utter.rate  = 0.9;
+        utter.pitch = 1.0;
+        utter.onend = function() { handleSegmentEnd(seg, index); };
+        utter.onerror = function() { handleSegmentEnd(seg, index); };
+        window.speechSynthesis.speak(utter);
+      } else {
+        setTimeout(function() { handleSegmentEnd(seg, index); }, 1500);
+      }
+    } else {
+      setTimeout(function() { handleSegmentEnd(seg, index); }, 800);
+    }
+    return;
+  }
+
   showOverlay('Loading...');
 
   const video = document.getElementById('jenn-video');
@@ -1081,21 +1127,6 @@ function loadSegment(index) {
   video.load();
   video.src = videoUrl;
   video.load();
-
-  // For audio format, show question text and go directly to record/confirm
-  if (INTERVIEW_FORMAT === 'audio') {
-    hideOverlay();
-    // Show the question display panel for audio
-    var qd = document.getElementById('question-display');
-    if (seg.question) {
-      qd.classList.add('show');
-      document.getElementById('q-label-text').textContent = seg.id === 'intro' ? 'Welcome' : seg.label;
-      document.getElementById('q-body-text').textContent = seg.question;
-    }
-    showState('waiting');
-    setTimeout(function() { handleSegmentEnd(seg, index); }, 800);
-    return;
-  }
 
   video.oncanplay = () => {
     hideOverlay();
@@ -1359,7 +1390,10 @@ function showState(s) {
 function showOverlay(t) { document.getElementById('overlay-text').textContent = t; document.getElementById('video-overlay').classList.add('show'); }
 function hideOverlay()  { document.getElementById('video-overlay').classList.remove('show'); }
 function showPiP() { document.getElementById('pip-wrap').classList.add('active'); }
-function hidePiP() { document.getElementById('pip-wrap').classList.remove('active'); }
+function hidePiP() {
+  var pip = document.getElementById('pip-wrap');
+  if (pip) pip.classList.remove('active');
+}
 function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
 </script>
 </body>
